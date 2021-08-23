@@ -22,7 +22,6 @@ export default function TableRow(props) {
     function extendtable() {
         setExtendTable(!extend);
     }
-
     
     return (
         <>

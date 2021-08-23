@@ -23,7 +23,7 @@ class CustomTable extends Component {
             rows.map((row, i) => {
                 return (
                     <TableRow
-                    key={"TableRowKey:",row," ",i}  
+                    key={this.props.tableName+"RowKey:"+"-"+i}  
                     index={i}  
                     userData={row} 
                     fieldList={this.props.fieldList}
@@ -35,7 +35,7 @@ class CustomTable extends Component {
                             if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
                                 value = collumn.valueFormatter(value,row);
                             return (
-                                <td key={"Collumns key",row,value} 
+                                <td key={"Collumns key"+row+value} 
                                 style={
                                         { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
                                         paddingLeft: "2%", fontSize: "12px"}
@@ -53,9 +53,9 @@ class CustomTable extends Component {
     getHeader() {
         let headerTitles = this.props.tableCollumn;
         return (
-            headerTitles.map((headerTitle) => {
+            headerTitles.map((headerTitle,i) => {
                 return (
-                    <th key={"TableHeaderKey:",headerTitles.headerName}>
+                    <th key={"TableHeaderKey:"+headerTitles.headerName+i}>
                         {headerTitle.headerName}
                     </th>
                 )

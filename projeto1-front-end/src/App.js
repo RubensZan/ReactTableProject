@@ -55,7 +55,7 @@ class ContainerTable extends Component{
             this.myProductsList[user.user_product_buyed_id].consumerLastName = user.user_last_name;
             this.myProductsList[user.user_product_buyed_id].consumerCompany = myUser.currentJob;
             this.myProductsList[user.user_product_buyed_id].consumerCity = myUser.currentAddress.user_address_city;
-            }
+          }
           else {
             this.myProductsList[user.user_product_buyed_id].consumerName.push(user.user_first_name);
             this.myProductsList[user.user_product_buyed_id].consumerBirthDate.push(user.user_birth_date);
@@ -121,40 +121,41 @@ class ContainerTable extends Component{
     })
   };
 
-  getuserdatas(){
-    return (
-      this.myUserList.map((user,i)=>
-        {return ( 
-          <TableRow
-            key={"user key:",user.user_id}  
-            index={i}  
-            userData={this.myUserList}    
-          > 
-            <td key={"TableRowCollumnKey:Name",user} >{user.user_first_name}</td> 
-            <td key={"TableRowCollumnKey:BirthDate",user}>{user.user_birth_date}</td>
-            <td key={"TableRowCollumnKey:Gender",user}>{user.user_gender}</td>
-            <td key={"TableRowCollumnKey:Job",user}>{ user.currentJob.user_job_title ?  user.currentJob.user_job_title : ''}</td>
-            <td key={"TableRowCollumnKey:Salary",user}>{ user.currentJob.user_job_salary && user.currentJob.user_job_salary_currency_symbol ?  user.currentJob.user_job_salary_currency_symbol +' '+ user.currentJob.user_job_salary : ''}</td>
-            <td key={"TableRowCollumnKey:Address",user}>{ user.currentAddress.user_address_city ?  user.currentAddress.user_address_city : ''}</td>
-            <td key={"TableRowCollumnKey:viewButton",user} onClick={(event)=>event.stopPropagation()}><button name="Botao" onClick={()=>this.showModal(user.currentCar)} >Visualizar</button></td>
-            <td key={"TableRowCollumnKey:toggleButton",user} style={{display:"flex",justifyContent: "center"}}>
-              {(i % 2 === 0) && (i % 4 === 0) ? 
-                <FontAwesomeIcon icon={faUserAlt} style={{fontSize:"25px",color:"#15a36f"}}/> 
-                : 
-                <FontAwesomeIcon icon={faUserAltSlash} style={{fontSize:"25px",color:"#a8140c"}}/>
-              }
-            </td>
-          </TableRow> 
-        )}
-      )
-    )
-  };
+  // getuserdatas(){
+  //   return (
+  //     this.myUserList.map((user,i)=>
+  //       {return ( 
+  //         <TableRow
+  //           key={"user key:",user.user_id}  
+  //           index={i}  
+  //           userData={this.myUserList}    
+  //         > 
+  //           <td key={"TableRowCollumnKey:Name",user} >{user.user_first_name}</td> 
+  //           <td key={"TableRowCollumnKey:BirthDate",user}>{user.user_birth_date}</td>
+  //           <td key={"TableRowCollumnKey:Gender",user}>{user.user_gender}</td>
+  //           <td key={"TableRowCollumnKey:Job",user}>{ user.currentJob.user_job_title ?  user.currentJob.user_job_title : ''}</td>
+  //           <td key={"TableRowCollumnKey:Salary",user}>{ user.currentJob.user_job_salary && user.currentJob.user_job_salary_currency_symbol ?  user.currentJob.user_job_salary_currency_symbol +' '+ user.currentJob.user_job_salary : ''}</td>
+  //           <td key={"TableRowCollumnKey:Address",user}>{ user.currentAddress.user_address_city ?  user.currentAddress.user_address_city : ''}</td>
+  //           <td key={"TableRowCollumnKey:viewButton",user} onClick={(event)=>event.stopPropagation()}><button name="Botao" onClick={()=>this.showModal(user.currentCar)} >Visualizar</button></td>
+  //           <td key={"TableRowCollumnKey:toggleButton",user} style={{display:"flex",justifyContent: "center"}}>
+  //             {(i % 2 === 0) && (i % 4 === 0) ? 
+  //               <FontAwesomeIcon icon={faUserAlt} style={{fontSize:"25px",color:"#15a36f"}}/> 
+  //               : 
+  //               <FontAwesomeIcon icon={faUserAltSlash} style={{fontSize:"25px",color:"#a8140c"}}/>
+  //             }
+  //           </td>
+  //         </TableRow> 
+  //       )}
+  //     )
+  //   )
+  // };
 
   render(){
     return ( 
       <>
         <CustomTable
           key="UserTable"
+          tableName="userTable"
           tableCollumn = {[
             {headerName: "Nomes",collumnValue: "user_first_name" },
             {headerName: "Data de Nascimento",collumnValue: "user_birth_date"},
@@ -197,6 +198,7 @@ class ContainerTable extends Component{
 
         <CustomTable
           key="ProductTable"
+          tableName="productTable"
           tableCollumn = {[
             {headerName: "Produto",collumnValue: "user_product_buyed_product_name" },
             {headerName: "Companhia",collumnValue: "user_product_buyed_company_name"},
