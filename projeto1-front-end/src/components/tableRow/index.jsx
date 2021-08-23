@@ -13,7 +13,7 @@ import ExtendedTableRow from '../extendedTableRow';
  */
 export default function TableRow(props) {
     const [extend, setExtendTable] = useState(false);
-
+    
     /**
      * @function module:src/components/tableRow/tableRow~extendtable
      * @summary - when the line is clicked, alternate the state of the extended line
@@ -33,7 +33,7 @@ export default function TableRow(props) {
                     }>
                 {props.children}
             </tr>
-            {extend ?
+            {extend && props.expansible ?
                     <tr>
                         <td style={{backgroundColor:"#f76060"}} colSpan="100%">
                             <ExtendedTableRow

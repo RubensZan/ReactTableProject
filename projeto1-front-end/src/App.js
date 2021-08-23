@@ -17,9 +17,8 @@ import products from './user/users_products_buyed.js';
 class ContainerTable extends Component{
   constructor(props){ 
     super(props);
-      
       this.myProductsList = Object.values(products); 
-      // console.log("meu produto",this.myProductsList);
+      
       this.myUserList = data.map(user=>{
         const myUser = user;  
         if (job[myUser.user_job_id] )
@@ -48,23 +47,23 @@ class ContainerTable extends Component{
           myUser.productsBuyed = products[myUser.user_product_buyed_id]; 
         else 
           myUser.productsBuyed = {};  
-
-        if(user.user_product_buyed_id)
-          if(!this.myProductsList[user.user_product_buyed_id].consumer){
-            this.myProductsList[user.user_product_buyed_id].consumerName = user.user_first_name;
-            this.myProductsList[user.user_product_buyed_id].consumerLastName = user.user_last_name;
-            this.myProductsList[user.user_product_buyed_id].consumerCompany = myUser.currentJob;
-            this.myProductsList[user.user_product_buyed_id].consumerCity = myUser.currentAddress.user_address_city;
-          }
-          else {
-            this.myProductsList[user.user_product_buyed_id].consumerName.push(user.user_first_name);
-            this.myProductsList[user.user_product_buyed_id].consumerBirthDate.push(user.user_birth_date);
-            this.myProductsList[user.user_product_buyed_id].consumerCompany.push(myUser.currentJob.user_job_title);
-            this.myProductsList[user.user_product_buyed_id].consumerCity.push(myUser.currentAddress.user_address_city);
-          }
+        console.log(myUser);
+        if (myUser.user_product_buyed_id && this.myProductsList[myUser.user_product_buyed_id].consumer){
+            this.myProductsList[myUser.user_product_buyed_id].consumer.name.push(myUser.user_first_name);
+            this.myProductsList[myUser.user_product_buyed_id].consumer.birthDate.push(myUser.user_birth_date);
+            this.myProductsList[myUser.user_product_buyed_id].consumer.job.push(myUser.currentJob.user_job_title);
+            this.myProductsList[myUser.user_product_buyed_id].consumer.city.push(myUser.currentAddress.user_address_city);
+        }
+        else {
+          this.myProductsList[myUser.user_product_buyed_id].consumer = {
+            "name": [myUser.user_first_name],"birthDate": [myUser.user_birth_date],"job": [myUser.currentJob.user_job_title],"city": [myUser.currentAddress.user_address_city]
+          };
+        }
+        
         return myUser;
       });
-      console.log(this.myProductsList);
+
+      console.log("PRODUCT LIST:",this.myProductsList);
 
     // States
     this.state = {
@@ -154,6 +153,7 @@ class ContainerTable extends Component{
     return ( 
       <>
         <CustomTable
+          expansible = {true}
           key="UserTable"
           tableName="userTable"
           tableCollumn = {[
@@ -197,6 +197,7 @@ class ContainerTable extends Component{
         <br></br>
 
         <CustomTable
+          expansible = {true}
           key="ProductTable"
           tableName="productTable"
           tableCollumn = {[

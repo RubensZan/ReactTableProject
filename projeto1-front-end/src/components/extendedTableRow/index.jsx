@@ -58,16 +58,17 @@ export default function ExtendedTableRow(props){
                                     null
                                 
                                 :   (boxColapsed === index) ? 
-                                <span>teste</span>
-                                    // <CustomTable
-                                    //     tableCollumn = {[
-                                    //         {headerName: "Nome",collumnValue: "user_product_buyed_product_name" },
-                                    //         {headerName: "Sobrenome",collumnValue: "user_product_buyed_company_name"},
-                                    //         {headerName: "Companhia",collumnValue: "user_product_buyed_product_material"},
-                                    //         {headerName: "Cidade",collumnValue: "user_product_buyed_commerce_department"}
-                                    //     ]}
-                                    //     tableRowsValues = {this.myProductsList}
-                                    // />
+                                
+                                    <CustomTable
+                                        expansible = {false}
+                                        tableCollumn = {[
+                                            {headerName: "Nome",collumnValue: "user_product_buyed_product_name" },
+                                            {headerName: "Sobrenome",collumnValue: "user_product_buyed_company_name"},
+                                            {headerName: "Companhia",collumnValue: "user_product_buyed_product_material"},
+                                            {headerName: "Cidade",collumnValue: "user_product_buyed_commerce_department"}
+                                        ]}
+                                        tableRowsValues = {Object.values(props.thisUserData)}
+                                    />
                                     :
                                     null
                             }

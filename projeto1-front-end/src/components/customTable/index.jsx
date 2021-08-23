@@ -23,7 +23,8 @@ class CustomTable extends Component {
             rows.map((row, i) => {
                 return (
                     <TableRow
-                    key={this.props.tableName+"RowKey:"+"-"+i}  
+                    expansible = {this.props.expansible}
+                    key={this.props.tableName+"RowKey:"+"->"+i}  
                     index={i}  
                     userData={row} 
                     fieldList={this.props.fieldList}
