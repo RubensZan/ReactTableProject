@@ -22,7 +22,7 @@ export default function TableRow(props) {
     function extendtable() {
         setExtendTable(!extend);
     }
-    
+    // console.log("PROPS TABLEROW",props);
     return (
         <>
             <tr 
@@ -36,7 +36,10 @@ export default function TableRow(props) {
             {extend && props.expansible ?
                     <tr>
                         <td style={{backgroundColor:"#f76060"}} colSpan="100%">
+                            
                             <ExtendedTableRow
+                                mountExpanded={props.mountExpanded}
+                                expansible={props.expansible}
                                 id={props.id}
                                 index={props.index}
                                 thisUserData= {props.userData}

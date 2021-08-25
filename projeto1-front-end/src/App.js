@@ -18,7 +18,7 @@ class ContainerTable extends Component{
   constructor(props){ 
     super(props);
       this.myProductsList = Object.values(products); 
-      
+
       this.myUserList = data.map(user=>{
         const myUser = user;  
         if (job[myUser.user_job_id] )
@@ -47,23 +47,13 @@ class ContainerTable extends Component{
           myUser.productsBuyed = products[myUser.user_product_buyed_id]; 
         else 
           myUser.productsBuyed = {};  
-        console.log(myUser);
-        if (myUser.user_product_buyed_id && this.myProductsList[myUser.user_product_buyed_id].consumer){
-            this.myProductsList[myUser.user_product_buyed_id].consumer.name.push(myUser.user_first_name);
-            this.myProductsList[myUser.user_product_buyed_id].consumer.birthDate.push(myUser.user_birth_date);
-            this.myProductsList[myUser.user_product_buyed_id].consumer.job.push(myUser.currentJob.user_job_title);
-            this.myProductsList[myUser.user_product_buyed_id].consumer.city.push(myUser.currentAddress.user_address_city);
-        }
-        else {
-          this.myProductsList[myUser.user_product_buyed_id].consumer = {
-            "name": [myUser.user_first_name],"birthDate": [myUser.user_birth_date],"job": [myUser.currentJob.user_job_title],"city": [myUser.currentAddress.user_address_city]
-          };
-        }
+        
+        // console.log("COMPROU:",myUser.user_product_buyed_id);
+        // console.log(this.myProductsList.filter((product)=>product.user_product_buyed_id === myUser.user_product_buyed_id));
+        
         
         return myUser;
       });
-
-      console.log("PRODUCT LIST:",this.myProductsList);
 
     // States
     this.state = {
@@ -71,6 +61,7 @@ class ContainerTable extends Component{
       allUsers : this.myUserList,
       showCustomAlert: false
     }; 
+    
 
     // Binds
     this.setUsersChanges = this.setUsersChanges.bind(this)
@@ -78,7 +69,7 @@ class ContainerTable extends Component{
     this.closeModal = this.closeModal.bind(this)
     this.defaultAlert = this.defaultAlert.bind(this)
     this.showAlert = this.showAlert.bind(this)
-
+    this.mountExtendedProductTable = this.mountExtendedProductTable.bind(this); 
   };
 
   //Functions
@@ -120,6 +111,39 @@ class ContainerTable extends Component{
     })
   };
 
+  // Function that will mount the expanded table when called 
+  mountExtendedProductTable(productId){
+    // will return the user that buyed the product
+    console.log("FUI CHAMADA",productId);
+    console.log("USERLIST",this.myUserList);
+    let consumer = this.myUserList.filter(
+      (user)=>user.productsBuyed.user_product_buyed_id === productId);
+      console.log("CONSUMERS",consumer);
+      if (consumer.length > 0)
+        return(
+          <div style={{border: "10px solid #ff5252"}}>
+            <CustomTable
+                expansible = {false}
+                key="ExtendedProductTable"
+                tableName="ExtendedProductTable"
+                tableCollumn = {[
+                  {headerName: "Nomes",collumnValue: "user_first_name"},
+                  {headerName: "Data de Nascimento",collumnValue: "user_birth_date"},
+                  {headerName: "Trabalho",collumnValue: "currentJob",valueFormatter: (currentJob)=> currentJob.user_job_title},
+                  {headerName: "Salario",collumnValue: "currentJob",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
+                  {headerName: "Endereço",collumnValue: "currentAddress",valueFormatter: (currentAddress)=> currentAddress.user_address_city}
+                ]}
+                tableRowsValues = {consumer}
+            />
+          </div>
+        )
+      return(
+        <div style={{border: "10px solid #ffa200"}}>
+          <p style={{fontSize: "20px",display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold"}}>Sem consumidores</p>
+        </div>
+      ) 
+  };
+
   // getuserdatas(){
   //   return (
   //     this.myUserList.map((user,i)=>
@@ -148,7 +172,6 @@ class ContainerTable extends Component{
   //     )
   //   )
   // };
-
   render(){
     return ( 
       <>
@@ -157,13 +180,13 @@ class ContainerTable extends Component{
           key="UserTable"
           tableName="userTable"
           tableCollumn = {[
-            {headerName: "Nomes",collumnValue: "user_first_name" },
-            {headerName: "Data de Nascimento",collumnValue: "user_birth_date"},
-            {headerName: "Genero",collumnValue: "user_gender"},
-            {headerName: "Trabalho",collumnValue: "currentJob",valueFormatter: (currentJob)=> currentJob.user_job_title},
-            {headerName: "Salario",collumnValue: "currentJob",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
-            {headerName: "Endereço",collumnValue: "currentAddress",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
-            {headerName: "Carro",collumnValue: "currentCar",valueFormatter: (currentCar)=> currentCar.car_name}
+            {headerName: "Nomes",collumnValue: "user_first_name", type: "text"},
+            {headerName: "Data de Nascimento",collumnValue: "user_birth_date", type: "text"},
+            {headerName: "Genero",collumnValue: "user_gender", type: "text"},
+            {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
+            {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
+            {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
+            {headerName: "Carro",collumnValue: "currentCar",type: "button",valueFormatter: (currentCar)=> currentCar.car_name}
           ]}
           tableRowsValues = {this.myUserList}
           fieldList = {{
@@ -215,6 +238,7 @@ class ContainerTable extends Component{
           }}
           fieldValues = "consumer"
           expandedType = "table"
+          mountExpanded = {this.mountExtendedProductTable}
         />
       </>
     )

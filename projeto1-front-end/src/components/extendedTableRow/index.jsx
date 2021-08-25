@@ -15,6 +15,8 @@ import CustomTable from '../customTable';
 export default function ExtendedTableRow(props){  
     const [boxColapsed, setBoxColapsed] = useState(null); 
     
+
+    // console.log("PROPS",props);
     /**
      * @function module:src/components/extendedTableRow/extendedTableRow~handleClick
      * @summary - when the button is clicked, open only the clicked field in the device window 
@@ -27,14 +29,17 @@ export default function ExtendedTableRow(props){
             currentIndex = null; 
         setBoxColapsed(currentIndex);
     }
-
     useEffect(()=>{
     },[boxColapsed])
 
     function getExpandibleBoxes(){
+        
         let titles = Object.keys(props.fieldList); 
         let fieldList = Object.values(props.fieldList);
         let fieldValues = Object.values(props.fieldValues);
+
+
+        console.log("PROPS ::",props);
         return(
             titles.map((title,index)=>{
                     return (
@@ -47,30 +52,21 @@ export default function ExtendedTableRow(props){
                                     <FontAwesomeIcon icon={faArrowRight} id={props.index} style={{fontSize:"30px",color:"#363636"}}/>
                                 }
                             </button>
-                            { props.expandedType === "lines" ? 
+
+                            { props.expansible && props.expandedType === "lines" ? 
                                 (boxColapsed === index) ? 
                                     <ExpandedRowContent
                                         key= {"ExpandedRowContent",index}
                                         fieldList = {fieldList[index]}
                                         fieldValues = {props.thisUserData[fieldValues[index]]}
                                     />
-                                    :
-                                    null
+                                :
+                                ""
                                 
-                                :   (boxColapsed === index) ? 
-                                
-                                    <CustomTable
-                                        expansible = {false}
-                                        tableCollumn = {[
-                                            {headerName: "Nome",collumnValue: "user_product_buyed_product_name" },
-                                            {headerName: "Sobrenome",collumnValue: "user_product_buyed_company_name"},
-                                            {headerName: "Companhia",collumnValue: "user_product_buyed_product_material"},
-                                            {headerName: "Cidade",collumnValue: "user_product_buyed_commerce_department"}
-                                        ]}
-                                        tableRowsValues = {Object.values(props.thisUserData)}
-                                    />
-                                    :
-                                    null
+                            :   (boxColapsed === index) ? 
+                                props.mountExpanded(props.index)
+                                :
+                                ""
                             }
                         </div>
                     );    

@@ -16,16 +16,17 @@ class CustomTable extends Component {
         super(props);
     };
     gettabledatas() {
-        let rows = this.props.tableRowsValues;
-        let collumns = this.props.tableCollumn;
-        
+        let rows = (typeof this.props.tableRowsValues === "array" ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
+        let collumns = (typeof this.props.tableCollumn === "array" ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
+        console.log("COLUNAS",collumns);
         return (
             rows.map((row, i) => {
                 return (
                     <TableRow
+                    mountExpanded = {this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"} 
                     expansible = {this.props.expansible}
                     key={this.props.tableName+"RowKey:"+"->"+i}  
-                    index={i}  
+                    index={row.user_id ? row.user_id : row.user_product_buyed_id }  
                     userData={row} 
                     fieldList={this.props.fieldList}
                     fieldValues={this.props.fieldValues}
@@ -36,7 +37,7 @@ class CustomTable extends Component {
                             if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
                                 value = collumn.valueFormatter(value,row);
                             return (
-                                <td key={"Collumns key"+row+value} 
+                                <td key={"CollumnsKey:"+row+value} 
                                 style={
                                         { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
                                         paddingLeft: "2%", fontSize: "12px"}
@@ -52,7 +53,7 @@ class CustomTable extends Component {
     };
 
     getHeader() {
-        let headerTitles = this.props.tableCollumn;
+        let headerTitles = (typeof this.props.tableCollumn === "array" ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         return (
             headerTitles.map((headerTitle,i) => {
                 return (
