@@ -113,9 +113,9 @@ class ContainerTable extends Component{
 
   // Function that will mount the expanded table when called 
   mountExtendedProductTable(productId){
-    // will return the user that buyed the product
     console.log("FUI CHAMADA",productId);
     console.log("USERLIST",this.myUserList);
+    // will return the consumers from the product
     let consumer = this.myUserList.filter(
       (user)=>user.productsBuyed.user_product_buyed_id === productId);
       console.log("CONSUMERS",consumer);
@@ -127,54 +127,74 @@ class ContainerTable extends Component{
                 key="ExtendedProductTable"
                 tableName="ExtendedProductTable"
                 tableCollumn = {[
-                  {headerName: "Nomes",collumnValue: "user_first_name"},
-                  {headerName: "Data de Nascimento",collumnValue: "user_birth_date"},
-                  {headerName: "Trabalho",collumnValue: "currentJob",valueFormatter: (currentJob)=> currentJob.user_job_title},
-                  {headerName: "Salario",collumnValue: "currentJob",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
-                  {headerName: "Endereço",collumnValue: "currentAddress",valueFormatter: (currentAddress)=> currentAddress.user_address_city}
+                  {headerName: "Nomes",collumnValue: "user_first_name", type: "text"},
+                  {headerName: "Data de Nascimento",collumnValue: "user_birth_date", type: "text"},
+                  {headerName: "Trabalho",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
+                  {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
+                  {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city}
                 ]}
                 tableRowsValues = {consumer}
             />
           </div>
         )
       return(
-        <div style={{border: "10px solid #ffa200"}}>
-          <p style={{fontSize: "20px",display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold"}}>Sem consumidores</p>
+        <div style={{border: "10px solid #ffffff"}}>
+          <p style={{fontSize: "20px",color: "#b50404",display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold"}}>
+            Sem consumidores!
+          </p>
         </div>
-      ) 
+      )
   };
 
-  // getuserdatas(){
-  //   return (
-  //     this.myUserList.map((user,i)=>
-  //       {return ( 
-  //         <TableRow
-  //           key={"user key:",user.user_id}  
-  //           index={i}  
-  //           userData={this.myUserList}    
-  //         > 
-  //           <td key={"TableRowCollumnKey:Name",user} >{user.user_first_name}</td> 
-  //           <td key={"TableRowCollumnKey:BirthDate",user}>{user.user_birth_date}</td>
-  //           <td key={"TableRowCollumnKey:Gender",user}>{user.user_gender}</td>
-  //           <td key={"TableRowCollumnKey:Job",user}>{ user.currentJob.user_job_title ?  user.currentJob.user_job_title : ''}</td>
-  //           <td key={"TableRowCollumnKey:Salary",user}>{ user.currentJob.user_job_salary && user.currentJob.user_job_salary_currency_symbol ?  user.currentJob.user_job_salary_currency_symbol +' '+ user.currentJob.user_job_salary : ''}</td>
-  //           <td key={"TableRowCollumnKey:Address",user}>{ user.currentAddress.user_address_city ?  user.currentAddress.user_address_city : ''}</td>
-  //           <td key={"TableRowCollumnKey:viewButton",user} onClick={(event)=>event.stopPropagation()}><button name="Botao" onClick={()=>this.showModal(user.currentCar)} >Visualizar</button></td>
-  //           <td key={"TableRowCollumnKey:toggleButton",user} style={{display:"flex",justifyContent: "center"}}>
-  //             {(i % 2 === 0) && (i % 4 === 0) ? 
-  //               <FontAwesomeIcon icon={faUserAlt} style={{fontSize:"25px",color:"#15a36f"}}/> 
-  //               : 
-  //               <FontAwesomeIcon icon={faUserAltSlash} style={{fontSize:"25px",color:"#a8140c"}}/>
-  //             }
-  //           </td>
-  //         </TableRow> 
-  //       )}
-  //     )
-  //   )
-  // };
+  mountFieldList(fieldValues, fieldList){
+    
+    console.log("FV EH :",fieldValues);
+    return (
+        fieldList.map((field, i) =>
+        {return ( 
+            <div key={"extendedTableRow:"+i}>
+                <p>
+                    <strong>{field.label}: </strong>
+                    {fieldValues[field.fieldKey]}
+                </p>
+            </div>
+        )})
+  )};
+
   render(){
     return ( 
       <>
+      {this.state.showCustomAlert ?
+          <CustomAlerts
+            textAlert= "Carro foi alterado com sucesso! "
+            successAlert = {true}
+            alertObject ={
+              this.state.showCustomAlert
+            }
+            showCustomAlert = {
+              this.showAlert
+            }
+            closeTime = {4000}
+          /> 
+          :
+          null
+        } 
+      {this.state.showModalCar ?
+          <ModalCar 
+            carObject={
+              this.state.showModalCar
+            }
+            closeHandler = {
+              this.closeModal
+            } 
+            saveChanges = {
+              this.setUsersChanges
+            }
+          />
+          : 
+          null
+        }
+        <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#ff6e6e", margin: "0 0"}}>Tabela de Usuários</h1>
         <CustomTable
           expansible = {true}
           key="UserTable"
@@ -186,7 +206,9 @@ class ContainerTable extends Component{
             {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
             {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
             {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
-            {headerName: "Carro",collumnValue: "currentCar",type: "button",valueFormatter: (currentCar)=> currentCar.car_name}
+            {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal},
+            {headerName: "Status",collumnValue: "",type: "icon"}
+
           ]}
           tableRowsValues = {this.myUserList}
           fieldList = {{
@@ -218,17 +240,18 @@ class ContainerTable extends Component{
           expandedType = "lines"
         />
         <br></br>
-
+        
+        <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#ff6e6e",margin: "0 0"}}>Tabela de Produtos</h1>
         <CustomTable
           expansible = {true}
           key="ProductTable"
           tableName="productTable"
           tableCollumn = {[
-            {headerName: "Produto",collumnValue: "user_product_buyed_product_name" },
-            {headerName: "Companhia",collumnValue: "user_product_buyed_company_name"},
-            {headerName: "Material",collumnValue: "user_product_buyed_product_material"},
-            {headerName: "Departamento",collumnValue: "user_product_buyed_commerce_department"},
-            {headerName: "Preço",collumnValue: "user_product_buyed_product_price"}
+            {headerName: "Produto",collumnValue: "user_product_buyed_product_name", type: "text" },
+            {headerName: "Companhia",collumnValue: "user_product_buyed_company_name", type: "text"},
+            {headerName: "Material",collumnValue: "user_product_buyed_product_material", type: "text"},
+            {headerName: "Departamento",collumnValue: "user_product_buyed_commerce_department", type: "text"},
+            {headerName: "Preço",collumnValue: "user_product_buyed_product_price", type: "text"}
           ]}
           tableRowsValues = {this.myProductsList}
           fieldList = {{

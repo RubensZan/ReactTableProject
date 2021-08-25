@@ -1,8 +1,8 @@
 import React, { Component, useState } from 'react';
-
-// import CustomAlerts from './components/customAlerts';
-import TableRow from '../tableRow';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle, faBan} from '@fortawesome/free-solid-svg-icons'; 
+
+import TableRow from '../tableRow';
 import { faUserAlt, faUserAltSlash } from '@fortawesome/free-solid-svg-icons';
 /**
  * @file module:src/components/table/index.jsx  
@@ -36,15 +36,47 @@ class CustomTable extends Component {
                             let value = row[collumn.collumnValue]; 
                             if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
                                 value = collumn.valueFormatter(value,row);
-                            return (
-                                <td key={"CollumnsKey:"+row+value} 
-                                style={
-                                        { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
-                                        paddingLeft: "2%", fontSize: "12px"}
-                                    }>
-                                    {value}
-                                </td>
-                            )}
+
+                                if (collumn.type === "text")
+                                    return (
+                                        
+                                        <td key={"CollumnsKey:"+row+value} 
+                                        style={
+                                                { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
+                                                paddingLeft: "2%", fontSize: "12px"}
+                                            }>
+                                            {value}
+                                        </td>
+                                    )
+                                else if (collumn.type === "button")
+                                            return(
+                                                <td key={"CollumnsButtonKey:"+row+value} 
+                                                    style={
+                                                            { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
+                                                            paddingLeft: "2%", fontSize: "12px"}
+                                                        }
+                                                    onClick={(event)=>event.stopPropagation()}
+                                                >   
+                                                    <button onClick={()=>collumn.handleClick(value)}>Visualizar</button>
+                                                </td>
+                                            )
+
+                                else if (collumn.type === "icon")
+                                            return(
+                                                <td key={"CollumnsButtonKey:"+row+value} 
+                                                    style={
+                                                            { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
+                                                            paddingLeft: "2%", fontSize: "12px"}
+                                                        }
+                                                >   {(i % 2 === 0) && (i % 3 === 0)? 
+                                                    <FontAwesomeIcon icon={faBan}></FontAwesomeIcon>
+                                                    :
+                                                    <FontAwesomeIcon icon={faCheckCircle}></FontAwesomeIcon>
+                                                    }
+                                                    
+                                                </td>
+                                            )
+                            }
                         )}
                     </TableRow>
                 );
