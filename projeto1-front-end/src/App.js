@@ -194,7 +194,7 @@ class ContainerTable extends Component{
           : 
           null
         }
-        <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#ff6e6e", margin: "0 0"}}>Tabela de Usuários</h1>
+        <h1 style={{display: "flex", justifyContent: "center",width: "100vw", backgroundColor: "#ff6e6e", margin: "0 0"}}>Tabela de Usuários</h1>
         <CustomTable
           expansible = {true}
           key="UserTable"
@@ -241,7 +241,7 @@ class ContainerTable extends Component{
         />
         <br></br>
         
-        <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#ff6e6e",margin: "0 0"}}>Tabela de Produtos</h1>
+        <h1 style={{display: "flex", justifyContent: "center", width: "100vw", backgroundColor: "#ff6e6e",margin: "0 0"}}>Tabela de Produtos</h1>
         <CustomTable
           expansible = {true}
           key="ProductTable"

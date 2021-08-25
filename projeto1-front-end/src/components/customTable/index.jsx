@@ -1,9 +1,7 @@
 import React, { Component, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faBan} from '@fortawesome/free-solid-svg-icons'; 
-
 import TableRow from '../tableRow';
-import { faUserAlt, faUserAltSlash } from '@fortawesome/free-solid-svg-icons';
 /**
  * @file module:src/components/table/index.jsx  
  * @param {number} props.index - Is the index of the line in the table
@@ -18,7 +16,6 @@ class CustomTable extends Component {
     gettabledatas() {
         let rows = (typeof this.props.tableRowsValues === "array" ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
         let collumns = (typeof this.props.tableCollumn === "array" ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
-        console.log("COLUNAS",collumns);
         return (
             rows.map((row, i) => {
                 return (
@@ -42,8 +39,7 @@ class CustomTable extends Component {
                                         
                                         <td key={"CollumnsKey:"+row+value} 
                                         style={
-                                                { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
-                                                paddingLeft: "2%", fontSize: "12px"}
+                                                { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2"}
                                             }>
                                             {value}
                                         </td>
@@ -52,8 +48,7 @@ class CustomTable extends Component {
                                             return(
                                                 <td key={"CollumnsButtonKey:"+row+value} 
                                                     style={
-                                                            { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
-                                                            paddingLeft: "2%", fontSize: "12px"}
+                                                            { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2"}
                                                         }
                                                     onClick={(event)=>event.stopPropagation()}
                                                 >   
@@ -65,15 +60,17 @@ class CustomTable extends Component {
                                             return(
                                                 <td key={"CollumnsButtonKey:"+row+value} 
                                                     style={
-                                                            { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2", 
-                                                            paddingLeft: "2%", fontSize: "12px"}
-                                                        }
-                                                >   {(i % 2 === 0) && (i % 3 === 0)? 
-                                                    <FontAwesomeIcon icon={faBan}></FontAwesomeIcon>
-                                                    :
-                                                    <FontAwesomeIcon icon={faCheckCircle}></FontAwesomeIcon>
+                                                        { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2",position: "relative"}
                                                     }
-                                                    
+                                                >   
+                                                    {(i % 2 === 0) && (i % 3 === 0) ? 
+                                                        <FontAwesomeIcon icon={faBan} style={{fontSize: "18px", position: "absolute",
+                                                            top: "50%",left: "50%",transform: "translate(-50%, -50%)"
+                                                        }}/>
+                                                    :
+                                                        <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: "18px",position: "absolute",
+                                                            top: "50%",left: "50%",transform: "translate(-50%, -50%)"}}/>
+                                                    }
                                                 </td>
                                             )
                             }
@@ -100,7 +97,7 @@ class CustomTable extends Component {
 
     render() {
         return (
-            <table style={{width: "100%",align: "center", borderCollapse: "collapse"}}>
+            <table style={{width: "100vw",textAlign: "center", borderCollapse: "collapse"}}>
                 <thead style={{ backgroundColor: "#ff7070"}}>
                     <tr>
                         {this.getHeader()}
