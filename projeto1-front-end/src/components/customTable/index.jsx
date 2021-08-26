@@ -22,13 +22,14 @@ class CustomTable extends Component {
         let totalRows = this.props.tableRowsValues.length;
         let totalPages = Math.ceil(totalRows / pageRows);  
         this.state = {
-            pageIndex: 0,
+            pageIndex: 1,
             canForward: true,
             canPrevious: false,
             rowsPerPage: 14,
             totalRows: totalRows,
             totalPages: totalPages
         }
+
 
     };
     gettabledatas() {
@@ -39,61 +40,63 @@ class CustomTable extends Component {
         let collumns = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         return (
             rows.map((row, i) => {
+                // let windowRows = (
                 return (
-                    
-                    <TableRow
-                    lineIndex = {i}
-                    mountExpanded = {this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"} 
-                    expansible = {this.props.expansible}
-                    key={this.props.tableName+"RowKey:"+"->"+i}  
-                    index={row.user_id ? row.user_id : row.user_product_buyed_id }  
-                    userData={row} 
-                    fieldList={this.props.fieldList}
-                    fieldValues={this.props.fieldValues}
-                    expandedType = {this.props.expandedType}
-                    >
-                        {collumns.map((collumn, j) => {
-                            let value = row[collumn.collumnValue]; 
-                            if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
-                                value = collumn.valueFormatter(value,row);
-                                if (collumn.type === "text")
-                                    return (
-                                        
-                                        <td key={"CollumnsKey:"+row+value}>
-                                            {value}
-                                        </td>
-                                    )
+                    i < ( this.state.rowsPerPage * this.state.pageIndex) ? 
+                        <TableRow
+                        lineIndex = {i}
+                        mountExpanded = {this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"} 
+                        expansible = {this.props.expansible}
+                        key={this.props.tableName+"RowKey:"+"->"+i}  
+                        index={row.user_id ? row.user_id : row.user_product_buyed_id }  
+                        userData={row} 
+                        fieldList={this.props.fieldList}
+                        fieldValues={this.props.fieldValues}
+                        expandedType = {this.props.expandedType}
+                        >
+                            {collumns.map((collumn, j) => {
+                                let value = row[collumn.collumnValue]; 
+                                if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
+                                    value = collumn.valueFormatter(value,row);
+                                    if (collumn.type === "text")
+                                        return (
+                                            <td key={"CollumnsKey:"+row+value}>
+                                                {value}
+                                            </td>
+                                        )
 
-                                else if (collumn.type === "button")
-                                            return(
-                                                <td key={"CollumnsButtonKey:"+row+value} 
-                                                    onClick={(event)=>event.stopPropagation()}
-                                                >   
-                                                    <button onClick={()=>collumn.handleClick(value)}>Visualizar</button>
-                                                </td>
-                                            )
+                                    else if (collumn.type === "button")
+                                                return(
+                                                    <td key={"CollumnsButtonKey:"+row+value} 
+                                                        onClick={(event)=>event.stopPropagation()}
+                                                    >   
+                                                        <button onClick={()=>collumn.handleClick(value)}>Visualizar</button>
+                                                    </td>
+                                                )
 
-                                else if (collumn.type === "icon")
-                                            return(
-                                                <td key={"CollumnsButtonKey:"+row+value} 
-                                                    style={{position: "relative"}}
-                                                >   
-                                                    {(i % 2 === 0) && (i % 3 === 0) ? 
-                                                        <FontAwesomeIcon icon={faBan} style={{fontSize: "18px", position: "absolute",
-                                                            top: "50%",left: "50%",transform: "translate(-50%, -50%)"
-                                                        }}/>
-                                                    :
-                                                        <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: "18px",position: "absolute",
-                                                            top: "50%",left: "50%",transform: "translate(-50%, -50%)"}}/>
-                                                    }
-                                                </td>
-                                            )
-                                else return null
-                            }
-                        )}
-                    </TableRow>
-                );
+                                    else if (collumn.type === "icon")
+                                                return(
+                                                    <td key={"CollumnsButtonKey:"+row+value} 
+                                                        style={{position: "relative"}}
+                                                    >   
+                                                        {(i % 2 === 0) && (i % 3 === 0) ? 
+                                                            <FontAwesomeIcon icon={faBan} style={{fontSize: "18px", position: "absolute",
+                                                                top: "50%",left: "50%",transform: "translate(-50%, -50%)"
+                                                            }}/>
+                                                        :
+                                                            <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: "18px",position: "absolute",
+                                                                top: "50%",left: "50%",transform: "translate(-50%, -50%)"}}/>
+                                                        }
+                                                    </td>
+                                                )
+                                    else return null
+                                }
+                            )}
+                        </TableRow>
+                    : null
+                )
             })
+            
         );
     };
 
@@ -109,6 +112,7 @@ class CustomTable extends Component {
             })
         )
     };
+    
     render() {
         return (
             <table style={{width: "100%",textAlign: "center", borderCollapse: "collapse"}}>
