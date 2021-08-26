@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp,faArrowRight} from '@fortawesome/free-solid-svg-icons'; 
 import ExpandedRowContent from '../expandedRowContent';
-import CustomTable from '../customTable';
 
 /**
  * @file module:src/components/extendedTableRow/index.jsx  
@@ -14,9 +13,6 @@ import CustomTable from '../customTable';
  */
 export default function ExtendedTableRow(props){  
     const [boxColapsed, setBoxColapsed] = useState(null); 
-    
-
-    // console.log("PROPS",props);
     /**
      * @function module:src/components/extendedTableRow/extendedTableRow~handleClick
      * @summary - when the button is clicked, open only the clicked field in the device window 
@@ -33,17 +29,15 @@ export default function ExtendedTableRow(props){
     },[boxColapsed])
 
     function getExpandibleBoxes(){
-        
+        // not altering its values 
+        // the keys of the fieldlist are the titles from the box(es)
         let titles = Object.keys(props.fieldList); 
         let fieldList = Object.values(props.fieldList);
         let fieldValues = Object.values(props.fieldValues);
-
-
-        console.log("PROPS ::",props);
         return(
             titles.map((title,index)=>{
                     return (
-                        <div key={"BoxWrapper",title} style={style.boxWrapper}>
+                        <div key={"BoxWrapper"+title} style={style.boxWrapper}>
                             <h1 style={style.extendedLineTitle}>{title}</h1>
                             <button onClick={()=>handleClick(index)} style={style.boxButton}>
                                 { (boxColapsed === index) ? 
@@ -56,17 +50,17 @@ export default function ExtendedTableRow(props){
                             { props.expansible && props.expandedType === "lines" ? 
                                 (boxColapsed === index) ? 
                                     <ExpandedRowContent
-                                        key= {"ExpandedRowContent",index}
+                                        key= {"ExpandedRowContent"+index}
                                         fieldList = {fieldList[index]}
                                         fieldValues = {props.thisUserData[fieldValues[index]]}
                                     />
                                 :
-                                ""
+                                null
                                 
-                            :   (boxColapsed === index) ? 
+                            :   ((boxColapsed === index) && (typeof props.mountExpanded === "function")) ? 
                                 props.mountExpanded(props.index)
                                 :
-                                ""
+                                null
                             }
                         </div>
                     );    
@@ -91,14 +85,14 @@ const style = {
     },
     boxWrapper:{
         position: "relative",
-        backgroundColor: "#ffa3a3"
+        backgroundColor: "#8570fa"
     },
     extendedLineTitle:{
         display: "flex",
         textAlign: "center",
         justifyContent: "center", 
         fontSize : "18px",
-        color: "#000000",
+        color: "#fff",
         padding: "16px 0"
     },
     boxButton:{

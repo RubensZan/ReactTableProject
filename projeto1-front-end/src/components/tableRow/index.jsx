@@ -1,7 +1,7 @@
 
 import React, {useState } from 'react';
-
 import ExtendedTableRow from '../extendedTableRow';
+import {Row} from './styles'; 
 
 /**
  * @file module:src/components/tableRow/index.jsx  
@@ -14,6 +14,7 @@ import ExtendedTableRow from '../extendedTableRow';
 export default function TableRow(props) {
     const [extend, setExtendTable] = useState(false);
     
+    
     /**
      * @function module:src/components/tableRow/tableRow~extendtable
      * @summary - when the line is clicked, alternate the state of the extended line
@@ -25,17 +26,15 @@ export default function TableRow(props) {
     // console.log("PROPS TABLEROW",props);
     return (
         <>
-            <tr 
+            <Row 
+                index = {props.lineIndex}  
                 onClick={() => extendtable()} 
-                style={
-                    { backgroundColor: props.index % 2 === 0 ? 
-                        "#cfcfcf" : "#fafffb", fontSize: "12px" }
-                    }>
+                >
                 {props.children}
-            </tr>
+            </Row>
             {extend && props.expansible ?
                     <tr>
-                        <td style={{backgroundColor:"#f76060"}} colSpan="100%">
+                        <td style={{backgroundColor:"#cfc7ff"}} colSpan="100%">
                             
                             <ExtendedTableRow
                                 mountExpanded={props.mountExpanded}

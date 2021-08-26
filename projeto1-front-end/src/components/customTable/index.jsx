@@ -1,25 +1,48 @@
-import React, { Component, useState } from 'react';
+import React, { Component} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faBan} from '@fortawesome/free-solid-svg-icons'; 
 import TableRow from '../tableRow';
 /**
  * @file module:src/components/table/index.jsx  
- * @param {number} props.index - Is the index of the line in the table
- * @returns the lines from the table, and in case of click 
+ * @param {Array} tableRowsValues - all values from the table rows
+ * @param {Array} tableCollumn - all values from the table collumns 
+ * @param {Array of objects} fieldList - array containing objects with the field titles and keys to acces fieldvalues  
+ * @param {Array} fieldValues - fieldvalues are the objects to be accessed when line is expanded
+ * @param {function} mountExpanded - function to extend the line when it is clicked
+ * @param {string} tableName - Is the name of the table
+ * @param {number} expandedType - The type of the expanded line when expanded
+ * @param {boolean} expansible - If the table rows are expansible  
+ * @returns table
  */
-
-
 class CustomTable extends Component {
-    constructor(props) {
+    constructor(props){
         super(props);
+
+        let pageRows = 16; 
+        let totalRows = this.props.tableRowsValues.length;
+        let totalPages = Math.ceil(totalRows / pageRows);  
+        this.state = {
+            pageIndex: 0,
+            canForward: true,
+            canPrevious: false,
+            rowsPerPage: 14,
+            totalRows: totalRows,
+            totalPages: totalPages
+        }
+
     };
     gettabledatas() {
-        let rows = (typeof this.props.tableRowsValues === "array" ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
-        let collumns = (typeof this.props.tableCollumn === "array" ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
+        console.log("TOTAL ROWS",this.state.totalRows);
+        console.log("PAGINAS TOTAIS",this.state.totalPages);
+        // not altering it's data
+        let rows = (Array.isArray(this.props.tableRowsValues) ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
+        let collumns = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         return (
             rows.map((row, i) => {
                 return (
+                    
                     <TableRow
+                    lineIndex = {i}
                     mountExpanded = {this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"} 
                     expansible = {this.props.expansible}
                     key={this.props.tableName+"RowKey:"+"->"+i}  
@@ -33,23 +56,17 @@ class CustomTable extends Component {
                             let value = row[collumn.collumnValue]; 
                             if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
                                 value = collumn.valueFormatter(value,row);
-
                                 if (collumn.type === "text")
                                     return (
                                         
-                                        <td key={"CollumnsKey:"+row+value} 
-                                        style={
-                                                { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2"}
-                                            }>
+                                        <td key={"CollumnsKey:"+row+value}>
                                             {value}
                                         </td>
                                     )
+
                                 else if (collumn.type === "button")
                                             return(
                                                 <td key={"CollumnsButtonKey:"+row+value} 
-                                                    style={
-                                                            { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2"}
-                                                        }
                                                     onClick={(event)=>event.stopPropagation()}
                                                 >   
                                                     <button onClick={()=>collumn.handleClick(value)}>Visualizar</button>
@@ -59,9 +76,7 @@ class CustomTable extends Component {
                                 else if (collumn.type === "icon")
                                             return(
                                                 <td key={"CollumnsButtonKey:"+row+value} 
-                                                    style={
-                                                        { backgroundColor: i % 2 === 0 ? "#ffffff" : "#c2c2c2",position: "relative"}
-                                                    }
+                                                    style={{position: "relative"}}
                                                 >   
                                                     {(i % 2 === 0) && (i % 3 === 0) ? 
                                                         <FontAwesomeIcon icon={faBan} style={{fontSize: "18px", position: "absolute",
@@ -73,6 +88,7 @@ class CustomTable extends Component {
                                                     }
                                                 </td>
                                             )
+                                else return null
                             }
                         )}
                     </TableRow>
@@ -82,7 +98,7 @@ class CustomTable extends Component {
     };
 
     getHeader() {
-        let headerTitles = (typeof this.props.tableCollumn === "array" ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
+        let headerTitles = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         return (
             headerTitles.map((headerTitle,i) => {
                 return (
@@ -93,12 +109,10 @@ class CustomTable extends Component {
             })
         )
     };
-
-
     render() {
         return (
-            <table style={{width: "100vw",textAlign: "center", borderCollapse: "collapse"}}>
-                <thead style={{ backgroundColor: "#ff7070"}}>
+            <table style={{width: "100%",textAlign: "center", borderCollapse: "collapse"}}>
+                <thead style={{ backgroundColor: "#8570fa"}}>
                     <tr>
                         {this.getHeader()}
                     </tr>
@@ -109,7 +123,6 @@ class CustomTable extends Component {
             </table>
         )
     }
-
 };
 
 export default CustomTable;

@@ -50,7 +50,7 @@ export default function ModalCar({ carObject, closeHandler, saveChanges }) {
                     <h1 style={{ color: "#ffffff" }}>Carro</h1>
                     <CustomCloseButton
                         handleClick={closeHandler}
-                        bgColor= "#ffb5bc"
+                        bgColor= "#4169E1"
                     />
                 </div>
                 <div style={style.headerModalContent}>
@@ -137,25 +137,12 @@ const style = {
         alignItems: "center"
     },
     modalDiv: {
-        backgroundColor: "#fffafa",
         width: "50%",
         height: "50%",
         position: "relative"
     },
-    modalButton: {
-        fontSize: "15px",
-        backgroundColor: "#ffc9c9",
-        width: "30px",
-        height: "30px",
-        borderRadius: "50%",
-        borderColor: "#ffff",
-        position: "absolute",
-        top: "-4px",
-        right: "-4px",
-        color: "#525252"
-    },
     headerModal: {
-        backgroundColor: "#ff8f8f",
+        backgroundColor: "#000080",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -167,7 +154,7 @@ const style = {
         backgroundColor: "#ffffff"
     },
     headerModalLine: {
-        backgroundColor: "pink",
+        backgroundColor: "#4169E1",
         width: "100%",
         height: "4px",
         marginTop: "0px"
@@ -189,7 +176,7 @@ const style = {
         height: "50px",
         width: "80%",
         margin: "0 10%",
-        backgroundColor: "#ff7d7d",
+        backgroundColor: "#191970",
         color: "#ffffff",
         border: "none",
         cursor: "pointer"

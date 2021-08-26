@@ -16,7 +16,7 @@ export default function CustomAlerts(props){
         {
             setFadeEffect(true); 
         }     
-    });
+    },[fade]);
 
     return (
         <div style= { fade ? style.mountedAlert : style.unmountedAlert} >

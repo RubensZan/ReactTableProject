@@ -2,11 +2,8 @@
 import React,{Component} from 'react';
 import {UAParser} from 'ua-parser-js'; 
 import CustomTable from './components/customTable';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faUserAlt, faUserAltSlash } from '@fortawesome/free-solid-svg-icons'; 
 import ModalCar from './components/carModal';   
 import CustomAlerts from './components/customAlerts';
-import TableRow from './components/tableRow'; 
 import data from './user/users.js';
 import job from './user/users_job.js';
 import address from './user/users_address.js';
@@ -17,57 +14,37 @@ import products from './user/users_products_buyed.js';
 class ContainerTable extends Component{
   constructor(props){ 
     super(props);
-      this.myProductsList = Object.values(products); 
-
+      let copy = JSON.parse(JSON.stringify(products));
+      this.myProductsList = Object.values(copy); 
       this.myUserList = data.map(user=>{
-        const myUser = user;  
-        if (job[myUser.user_job_id] )
-          myUser.currentJob = job[myUser.user_job_id]; 
-        else 
-          myUser.currentJob = {}; 
+        const myUser = JSON.parse(JSON.stringify(user));  
+
+        myUser.currentJob = job[myUser.user_job_id] || {};
+        myUser.currentAddress =  address[myUser.user_address_id] || {}; 
+        myUser.currentAccess = access[myUser.user_access_id] || {};
+        myUser.productsBuyed = products[myUser.user_product_buyed_id] || {};  
         
-        if (address[myUser.user_address_id] )
-          myUser.currentAddress= address[myUser.user_address_id]; 
-        else 
-          myUser.currentAddress = {}; 
-        
-        if (cars[myUser.user_car_id] ){
-          myUser.currentCar = cars[myUser.user_car_id]; 
-          myUser.currentCar = {...myUser.currentCar,userID: myUser.user_id}
-        }
+        if (cars[myUser.user_car_id] )
+          myUser.currentCar = {...cars[myUser.user_car_id], userID: myUser.user_id }
         else 
           myUser.currentCar = {}; 
-        
-        if (access[myUser.user_access_id] )
-          myUser.currentAccess = access[myUser.user_access_id]; 
-        else 
-          myUser.currentAccess = {}; 
-        
-        if (products[myUser.user_product_buyed_id] )
-          myUser.productsBuyed = products[myUser.user_product_buyed_id]; 
-        else 
-          myUser.productsBuyed = {};  
-        
         // console.log("COMPROU:",myUser.user_product_buyed_id);
         // console.log(this.myProductsList.filter((product)=>product.user_product_buyed_id === myUser.user_product_buyed_id));
         
-        
         return myUser;
       });
-
+  
     // States
     this.state = {
       showModalCar : null,
       allUsers : this.myUserList,
       showCustomAlert: false
     }; 
-    
 
     // Binds
     this.setUsersChanges = this.setUsersChanges.bind(this)
     this.showModal = this.showModal.bind(this)
     this.closeModal = this.closeModal.bind(this)
-    this.defaultAlert = this.defaultAlert.bind(this)
     this.showAlert = this.showAlert.bind(this)
     this.mountExtendedProductTable = this.mountExtendedProductTable.bind(this); 
   };
@@ -98,13 +75,6 @@ class ContainerTable extends Component{
     })
   };
 
-  defaultAlert (alertObject)
-  {
-    this.setState({
-      showCustomAlert: false  
-    })
-  }; 
-
   showAlert(){
     this.setState({
       showCustomAlert: true
@@ -121,7 +91,7 @@ class ContainerTable extends Component{
       console.log("CONSUMERS",consumer);
       if (consumer.length > 0)
         return(
-          <div style={{border: "10px solid #ff5252"}}>
+          <div style={{border: "10px solid #cfc7ff"}}>
             <CustomTable
                 expansible = {false}
                 key="ExtendedProductTable"
@@ -138,8 +108,8 @@ class ContainerTable extends Component{
           </div>
         )
       return(
-        <div style={{border: "10px solid #ffffff"}}>
-          <p style={{fontSize: "20px",color: "#b50404",display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold"}}>
+        <div style={{border: "10px solid #cfc7ff"}}>
+          <p style={{fontSize: "20px",color: "#fff",display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold"}}>
             Sem consumidores!
           </p>
         </div>
@@ -160,10 +130,25 @@ class ContainerTable extends Component{
             </div>
         )})
   )};
+  
+  // componentDidMount() {
+  //   const intervalId = setInterval(() => {
+  //     this.setState(prevState => {
+  //       return {
+  //         timer: prevState.timer + 1,
+  //       };
+  //     });
+  //   }, 1000);
+  // }
 
+  
   render(){
     return ( 
-      <>
+      <div style={{height: "100vh"}}>
+      {/* <p>Session Time: {this.state.timer}</p>
+      <p>Cars altereds: {this.state.alteredCar}</p> */}
+
+
       {this.state.showCustomAlert ?
           <CustomAlerts
             textAlert= "Carro foi alterado com sucesso! "
@@ -194,76 +179,82 @@ class ContainerTable extends Component{
           : 
           null
         }
-        <h1 style={{display: "flex", justifyContent: "center",width: "100vw", backgroundColor: "#ff6e6e", margin: "0 0"}}>Tabela de Usuários</h1>
-        <CustomTable
-          expansible = {true}
-          key="UserTable"
-          tableName="userTable"
-          tableCollumn = {[
-            {headerName: "Nomes",collumnValue: "user_first_name", type: "text"},
-            {headerName: "Data de Nascimento",collumnValue: "user_birth_date", type: "text"},
-            {headerName: "Genero",collumnValue: "user_gender", type: "text"},
-            {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
-            {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
-            {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
-            {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal},
-            {headerName: "Status",collumnValue: "",type: "icon"}
-
-          ]}
-          tableRowsValues = {this.myUserList}
-          fieldList = {{
-              "Acesso": [
-                {label: "Rede",fieldKey: "user_access_business_technoloy"},
-                {label: "Login",fieldKey: "user_access_login"},
-                {label: "SO",fieldKey: "userOs"},
-                {label: "IP",fieldKey: "user_access_ip_address"}
-              ],
-              "Endereço" : [
-                {label: "País",fieldKey: "user_address_country"},
-                {label: "Estado",fieldKey: "user_address_state"},
-                {label: "Cidade",fieldKey: "user_address_city"},
-                {label: "Rua",fieldKey: "user_address_street_name"},
-                {label: "Endereço",fieldKey: "user_address_street_address"}
-              ],
-              "Emprego": [
-                {label: "Emprego",fieldKey: "user_job_title"},
-                {label: "Endereço do emprego",fieldKey: "user_job_address"}
-              ], 
-              "Produto Comprado": [
-                {label: "Empresa",fieldKey: "user_product_buyed_company_name"},
-                {label: "Nome",fieldKey: "user_product_buyed_product_name"},
-                {label: "Material",fieldKey: "user_product_buyed_product_material"},
-                {label: "Descrição",fieldKey: "user_product_buyed_product_description"} 
-              ]
-          }}
-          fieldValues = {{"Acesso": "currentAccess","Endereço": "currentAddress","Emprego": "currentJob","Produto Comprado": "productsBuyed"}}
-          expandedType = "lines"
-        />
-        <br></br>
+        <div style={{height: "50%", overflowY: "scroll"}}>
+            <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#8570fa", margin: "0 0",color: "#fff"}}>
+              Tabela de Usuários
+            </h1>
+          <CustomTable
+            expansible = {true}
+            key="UserTable"
+            tableName="userTable"
+            tableCollumn = {[
+              {headerName: "Nomes",collumnValue: "user_first_name", type: "text"},
+              {headerName: "Data de Nascimento",collumnValue: "user_birth_date", type: "text"},
+              {headerName: "Genero",collumnValue: "user_gender", type: "text"},
+              {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
+              {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
+              {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
+              {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal},
+              {headerName: "Status",collumnValue: "",type: "icon"}
+            ]}
+            tableRowsValues = {this.myUserList}
+            fieldList = {{
+                "Acesso": [
+                  {label: "Rede",fieldKey: "user_access_business_technoloy"},
+                  {label: "Login",fieldKey: "user_access_login"},
+                  {label: "SO",fieldKey: "userOs"},
+                  {label: "IP",fieldKey: "user_access_ip_address"}
+                ],
+                "Endereço" : [
+                  {label: "País",fieldKey: "user_address_country"},
+                  {label: "Estado",fieldKey: "user_address_state"},
+                  {label: "Cidade",fieldKey: "user_address_city"},
+                  {label: "Rua",fieldKey: "user_address_street_name"},
+                  {label: "Endereço",fieldKey: "user_address_street_address"}
+                ],
+                "Emprego": [
+                  {label: "Emprego",fieldKey: "user_job_title"},
+                  {label: "Endereço do emprego",fieldKey: "user_job_address"}
+                ], 
+                "Produto Comprado": [
+                  {label: "Empresa",fieldKey: "user_product_buyed_company_name"},
+                  {label: "Nome",fieldKey: "user_product_buyed_product_name"},
+                  {label: "Material",fieldKey: "user_product_buyed_product_material"},
+                  {label: "Descrição",fieldKey: "user_product_buyed_product_description"} 
+                ]
+            }}
+            fieldValues = {{"Acesso": "currentAccess","Endereço": "currentAddress","Emprego": "currentJob","Produto Comprado": "productsBuyed"}}
+            expandedType = "lines"
+          />
+        </div>
         
-        <h1 style={{display: "flex", justifyContent: "center", width: "100vw", backgroundColor: "#ff6e6e",margin: "0 0"}}>Tabela de Produtos</h1>
-        <CustomTable
-          expansible = {true}
-          key="ProductTable"
-          tableName="productTable"
-          tableCollumn = {[
-            {headerName: "Produto",collumnValue: "user_product_buyed_product_name", type: "text" },
-            {headerName: "Companhia",collumnValue: "user_product_buyed_company_name", type: "text"},
-            {headerName: "Material",collumnValue: "user_product_buyed_product_material", type: "text"},
-            {headerName: "Departamento",collumnValue: "user_product_buyed_commerce_department", type: "text"},
-            {headerName: "Preço",collumnValue: "user_product_buyed_product_price", type: "text"}
-          ]}
-          tableRowsValues = {this.myProductsList}
-          fieldList = {{
-            "Compradores": [
-              {label: "Comprador",fieldKey: "consumer"}
-            ]
-          }}
-          fieldValues = "consumer"
-          expandedType = "table"
-          mountExpanded = {this.mountExtendedProductTable}
-        />
-      </>
+        <div style={{height: "50%", overflowY: "scroll"}}>
+          <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa",margin: "0 0",color: "#fff"}}>
+            Tabela de Produtos
+          </h1>
+          <CustomTable
+            expansible = {true}
+            key="ProductTable"
+            tableName="productTable"
+            tableCollumn = {[
+              {headerName: "Produto",collumnValue: "user_product_buyed_product_name", type: "text" },
+              {headerName: "Companhia",collumnValue: "user_product_buyed_company_name", type: "text"},
+              {headerName: "Material",collumnValue: "user_product_buyed_product_material", type: "text"},
+              {headerName: "Departamento",collumnValue: "user_product_buyed_commerce_department", type: "text"},
+              {headerName: "Preço",collumnValue: "user_product_buyed_product_price", type: "text"}
+            ]}
+            tableRowsValues = {this.myProductsList}
+            fieldList = {{
+              "Compradores": [
+                {label: "Comprador",fieldKey: "consumer"}
+              ]
+            }}
+            fieldValues = "consumer"
+            expandedType = "table"
+            mountExpanded = {this.mountExtendedProductTable}
+          />
+        </div>
+      </div>
     )
   };
 }

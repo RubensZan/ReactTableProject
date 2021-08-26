@@ -21,7 +21,7 @@ export default function ExpandedRowContent(props){
             {return ( 
                 <div key={"extendedTableRow:"+i}>
                     <p style={style.extendedTableRowText}>
-                        <strong>{field.label}: </strong>
+                        <strong>{field.label}:  </strong>
                         {fieldValues[field.fieldKey]}
                     </p>
                 </div>
@@ -42,6 +42,8 @@ const style = {
     },
     extendedTableRowText: {
         fontFamily: "sanserif",
-        fontSize: "18px"
+        fontSize: "18px",
+        display: "flex",
+        whiteSpace: "pre"
     }
 };
