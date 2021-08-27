@@ -1,7 +1,7 @@
-import React, { Component} from 'react';
-import {ControlButton} from './styles'; 
+import React, { Component } from 'react';
+import { ControlButton } from './styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faBan} from '@fortawesome/free-solid-svg-icons'; 
+import { faCheckCircle, faBan } from '@fortawesome/free-solid-svg-icons';
 import TableRow from '../tableRow';
 /**
  * @file module:src/components/table/index.jsx  
@@ -16,18 +16,18 @@ import TableRow from '../tableRow';
  * @returns table
  */
 class CustomTable extends Component {
-    constructor(props){
+    constructor(props) {
         super(props);
 
-        let pageRows = 16; 
+        let pageRows = 9;
         let totalRows = this.props.tableRowsValues.length;
-        let totalPages = Math.ceil(totalRows / pageRows);  
+        let totalPages = Math.ceil(totalRows / pageRows);
         this.state = {
             pageIndex: 1,
-            firstRow: 0, 
+            firstRow: 0,
             canForward: true,
             canPrevious: false,
-            rowsPerPage: 14,
+            rowsPerPage: pageRows,
             totalRows: totalRows,
             totalPages: totalPages
         }
@@ -36,135 +36,181 @@ class CustomTable extends Component {
         this.goPrevious = this.goPrevious.bind(this)
         this.gettabledatas = this.gettabledatas.bind(this)
         this.getOptions = this.getOptions.bind(this)
+        this.mountCollumnsData = this.mountCollumnsData.bind(this)
     };
 
-    goForward(){
+    goForward() {
         // is the last page
-        if (this.state.pageIndex === this.state.totalPages){
+        if (this.state.pageIndex === this.state.totalPages) {
             // alert("CAN´T GO FORWARD");
-            return; 
+            return;
         }
 
         // is the penultimate
-        if (this.state.pageIndex === this.state.totalPages-1){
+        if (this.state.pageIndex === this.state.totalPages - 1) {
             this.setState({
-                canPrevious: true, 
+                canPrevious: true,
                 canForward: false,
-                pageIndex: this.state.pageIndex+1,
-                firstRow: this.state.firstRow+14
-            }); 
-            return; 
+                pageIndex: this.state.pageIndex + 1,
+                firstRow: this.state.firstRow + this.state.rowsPerPage
+
+            });
+            return;
         }
 
         this.setState({
-            canPrevious: true, 
+            canPrevious: true,
             canForward: true,
-            pageIndex: this.state.pageIndex+1, 
-            firstRow: this.state.firstRow+14
-        }); 
+            pageIndex: this.state.pageIndex + 1,
+            firstRow: this.state.firstRow + this.state.rowsPerPage
+
+        });
     };
 
-    goPrevious(){
+    goPrevious() {
         //First page
-        if (this.state.pageIndex === 1){
+        if (this.state.pageIndex === 1) {
             return;
         }
 
         //Second page
-        if (this.state.pageIndex === 2){
+        if (this.state.pageIndex === 2) {
             this.setState({
                 canForward: true,
                 canPrevious: false,
-                pageIndex: this.state.pageIndex-1,
-                firstRow: this.state.firstRow-14
-            }); 
-            return; 
+                pageIndex: this.state.pageIndex - 1,
+                firstRow: this.state.firstRow - this.state.rowsPerPage
+            });
+            return;
         }
 
         this.setState({
             canForward: true,
             canPrevious: true,
-            pageIndex: this.state.pageIndex-1,
-            firstRow: this.state.firstRow-14
-        }); 
+            pageIndex: this.state.pageIndex - 1,
+            firstRow: this.state.firstRow - this.state.rowsPerPage
 
+        });
+
+    };
+
+    mountCollumnsData(row, collumn, i) {
+        let value = row[collumn.collumnValue];
+        console.log("VALOR",value);
+        if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
+            value = collumn.valueFormatter(value, row);
+        if (collumn.type === "text")
+            return (
+                <td key={"CollumnsKey:" + row + value}>
+                    {value}
+                </td>
+            )
+
+        else if (collumn.type === "button")
+            return (
+                <td key={"CollumnsButtonKey:" + row + value}
+                    onClick={(event) => event.stopPropagation()}
+                >
+                    <button onClick={() => collumn.handleClick(value)}>Visualizar</button>
+                </td>
+            )
+
+        else if (collumn.type === "icon")
+            return (
+                <td key={"CollumnsButtonKey:" + row + value}
+                    style={{ position: "relative" }}
+                >
+                    {(i % 2 === 0) && (i % 3 === 0) ?
+                        <FontAwesomeIcon icon={faBan} style={{
+                            fontSize: "18px", position: "absolute",
+                            top: "50%", left: "50%", transform: "translate(-50%, -50%)"
+                        }} />
+                        :
+                        <FontAwesomeIcon icon={faCheckCircle} style={{
+                            fontSize: "18px", position: "absolute",
+                            top: "50%", left: "50%", transform: "translate(-50%, -50%)"
+                        }} />
+                    }
+                </td>
+            )
+        else return null 
     };
 
     gettabledatas() {
-        console.log("TOTAL ROWS",this.state.totalRows);
-        console.log("PAGINAS TOTAIS",this.state.totalPages);
         // not altering it's data
         let rows = (Array.isArray(this.props.tableRowsValues) ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
         let collumns = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
-        return (
-            // FAZER COM FOR 
-           
-            rows.map((row, i) => {
-                return(
-                    i < ( this.state.rowsPerPage * this.state.pageIndex) && (i >= this.state.firstRow) ?
-                        <TableRow
-                        lineIndex = {i}
-                        mountExpanded = {this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"} 
-                        expansible = {this.props.expansible}
-                        key={this.props.tableName+"RowKey:"+i}  
-                        index={row.user_id ? row.user_id : row.user_product_buyed_id }  
-                        userData={row} 
-                        fieldList={this.props.fieldList}
-                        fieldValues={this.props.fieldValues}
-                        expandedType = {this.props.expandedType}
-                        >
-                            {collumns.map((collumn, j) => {
-                                let value = row[collumn.collumnValue]; 
-                                if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
-                                    value = collumn.valueFormatter(value,row);
-                                    if (collumn.type === "text")
-                                        return (
-                                            <td key={"CollumnsKey:"+row+value}>
-                                                {value}
-                                            </td>
-                                        )
+        let windowRows = [];
+        // FAZER COM FOR 
+        for (let i = this.state.firstRow; i < this.state.firstRow + this.state.rowsPerPage && i < this.state.totalRows; i++) {
+            let row = rows[i];
+            windowRows.push(
+                <TableRow
+                    lineIndex={i}
+                    mountExpanded={this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"}
+                    expansible={this.props.expansible}
+                    key={this.props.tableName + "RowKey:" + i}
+                    index={row.user_id ? row.user_id : row.user_product_buyed_id}
+                    userData={row}
+                    fieldList={this.props.fieldList}
+                    fieldValues={this.props.fieldValues}
+                    expandedType={this.props.expandedType}
+                >
+                    {collumns.map((collumn, j) => {
+                        // return this.mountCollumnsData(collumn, row, i)
+                        let value = row[collumn.collumnValue];
+                        if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
+                            value = collumn.valueFormatter(value, row);
+                        if (collumn.type === "text")
+                            return (
+                                <td key={"CollumnsKey:" + row + value}>
+                                    {value}
+                                </td>
+                            )
 
-                                    else if (collumn.type === "button")
-                                                return(
-                                                    <td key={"CollumnsButtonKey:"+row+value} 
-                                                        onClick={(event)=>event.stopPropagation()}
-                                                    >   
-                                                        <button onClick={()=>collumn.handleClick(value)}>Visualizar</button>
-                                                    </td>
-                                                )
+                        else if (collumn.type === "button")
+                            return (
+                                <td key={"CollumnsButtonKey:" + row + value}
+                                    onClick={(event) => event.stopPropagation()}
+                                >
+                                    <button onClick={() => collumn.handleClick(value)}>Visualizar</button>
+                                </td>
+                            )
 
-                                    else if (collumn.type === "icon")
-                                                return(
-                                                    <td key={"CollumnsButtonKey:"+row+value} 
-                                                        style={{position: "relative"}}
-                                                    >   
-                                                        {(i % 2 === 0) && (i % 3 === 0) ? 
-                                                            <FontAwesomeIcon icon={faBan} style={{fontSize: "18px", position: "absolute",
-                                                                top: "50%",left: "50%",transform: "translate(-50%, -50%)"
-                                                            }}/>
-                                                        :
-                                                            <FontAwesomeIcon icon={faCheckCircle} style={{ fontSize: "18px",position: "absolute",
-                                                                top: "50%",left: "50%",transform: "translate(-50%, -50%)"}}/>
-                                                        }
-                                                    </td>
-                                                )
-                                    else return null
-                                }
-                            )}
-                        </TableRow>
-                    : null
-                )
-            })
-            
-        );
+                        else if (collumn.type === "icon")
+                            return (
+                                <td key={"CollumnsButtonKey:" + row + value}
+                                    style={{ position: "relative" }}
+                                >
+                                    {(i % 2 === 0) && (i % 3 === 0) ?
+                                        <FontAwesomeIcon icon={faBan} style={{
+                                            fontSize: "18px", position: "absolute",
+                                            top: "50%", left: "50%", transform: "translate(-50%, -50%)"
+                                        }} />
+                                        :
+                                        <FontAwesomeIcon icon={faCheckCircle} style={{
+                                            fontSize: "18px", position: "absolute",
+                                            top: "50%", left: "50%", transform: "translate(-50%, -50%)"
+                                        }} />
+                                    }
+                                </td>
+                            )
+                        else return null 
+                    }
+                    )}
+                </TableRow>
+            )
+        }
+        return windowRows;
     };
+
 
     getHeader() {
         let headerTitles = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         return (
-            headerTitles.map((headerTitle,i) => {
+            headerTitles.map((headerTitle, i) => {
                 return (
-                    <th key={"TableHeaderKey:"+headerTitles.headerName+i}>
+                    <th key={"TableHeaderKey:" + headerTitles.headerName + i}>
                         {headerTitle.headerName}
                     </th>
                 )
@@ -172,28 +218,28 @@ class CustomTable extends Component {
         )
     };
 
-    getOptions(){
-        let options = [<option selected key={"SelectOption",this.state.pageIndex}>{this.state.pageIndex}</option>]; 
+    getOptions() {
+        let options = [<option selected key={"SelectOption", this.state.pageIndex}>{this.state.pageIndex}</option>];
         for (let index = 1; index < this.state.totalPages; ++index) {
-            if (index !== this.state.pageIndex )
-                options.push(<option key={"SelectOption:"+index}>{index}</option>);
-        } 
+            if (index !== this.state.pageIndex)
+                options.push(<option key={"SelectOption:" + index}>{index}</option>);
+        }
         // console.log(options);
-        return options; 
+        return options;
     };
-    
+
     render() {
         return (
             <>
-                <div style={{backgroundColor: "rgb(133 112 250)", width: "100%"}}>
+                <div style={{ backgroundColor: "rgb(133 112 250)", width: "100%" }}>
                     <ControlButton able={this.state.canPrevious} onClick={this.goPrevious}> &lt;&lt; </ControlButton>
                     <ControlButton able={this.state.canForward} onClick={this.goForward}>  &gt;&gt; </ControlButton>
-                    <select name="select"> 
+                    <select name="select">
                         {this.getOptions()}
                     </select>
                 </div>
-                <table style={{width: "100%",textAlign: "center", borderCollapse: "collapse"}}>
-                    <thead style={{ backgroundColor: "#8570fa"}}>
+                <table style={{ width: "100%", textAlign: "center", borderCollapse: "collapse" }}>
+                    <thead style={{ backgroundColor: "#8570fa" }}>
                         <tr>
                             {this.getHeader()}
                         </tr>
