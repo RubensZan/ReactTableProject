@@ -1,4 +1,5 @@
 import React, { Component} from 'react';
+import {ControlButton} from './styles'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faBan} from '@fortawesome/free-solid-svg-icons'; 
 import TableRow from '../tableRow';
@@ -23,6 +24,7 @@ class CustomTable extends Component {
         let totalPages = Math.ceil(totalRows / pageRows);  
         this.state = {
             pageIndex: 1,
+            firstRow: 0, 
             canForward: true,
             canPrevious: false,
             rowsPerPage: 14,
@@ -30,8 +32,64 @@ class CustomTable extends Component {
             totalPages: totalPages
         }
 
+        this.goForward = this.goForward.bind(this)
+        this.goPrevious = this.goPrevious.bind(this)
+        this.gettabledatas = this.gettabledatas.bind(this)
+        this.getOptions = this.getOptions.bind(this)
+    };
+
+    goForward(){
+        // is the last page
+        if (this.state.pageIndex === this.state.totalPages){
+            // alert("CAN´T GO FORWARD");
+            return; 
+        }
+
+        // is the penultimate
+        if (this.state.pageIndex === this.state.totalPages-1){
+            this.setState({
+                canPrevious: true, 
+                canForward: false,
+                pageIndex: this.state.pageIndex+1,
+                firstRow: this.state.firstRow+14
+            }); 
+            return; 
+        }
+
+        this.setState({
+            canPrevious: true, 
+            canForward: true,
+            pageIndex: this.state.pageIndex+1, 
+            firstRow: this.state.firstRow+14
+        }); 
+    };
+
+    goPrevious(){
+        //First page
+        if (this.state.pageIndex === 1){
+            return;
+        }
+
+        //Second page
+        if (this.state.pageIndex === 2){
+            this.setState({
+                canForward: true,
+                canPrevious: false,
+                pageIndex: this.state.pageIndex-1,
+                firstRow: this.state.firstRow-14
+            }); 
+            return; 
+        }
+
+        this.setState({
+            canForward: true,
+            canPrevious: true,
+            pageIndex: this.state.pageIndex-1,
+            firstRow: this.state.firstRow-14
+        }); 
 
     };
+
     gettabledatas() {
         console.log("TOTAL ROWS",this.state.totalRows);
         console.log("PAGINAS TOTAIS",this.state.totalPages);
@@ -39,15 +97,16 @@ class CustomTable extends Component {
         let rows = (Array.isArray(this.props.tableRowsValues) ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
         let collumns = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         return (
+            // FAZER COM FOR 
+           
             rows.map((row, i) => {
-                // let windowRows = (
-                return (
-                    i < ( this.state.rowsPerPage * this.state.pageIndex) ? 
+                return(
+                    i < ( this.state.rowsPerPage * this.state.pageIndex) && (i >= this.state.firstRow) ?
                         <TableRow
                         lineIndex = {i}
                         mountExpanded = {this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"} 
                         expansible = {this.props.expansible}
-                        key={this.props.tableName+"RowKey:"+"->"+i}  
+                        key={this.props.tableName+"RowKey:"+i}  
                         index={row.user_id ? row.user_id : row.user_product_buyed_id }  
                         userData={row} 
                         fieldList={this.props.fieldList}
@@ -112,19 +171,38 @@ class CustomTable extends Component {
             })
         )
     };
+
+    getOptions(){
+        let options = [<option selected key={"SelectOption",this.state.pageIndex}>{this.state.pageIndex}</option>]; 
+        for (let index = 1; index < this.state.totalPages; ++index) {
+            if (index !== this.state.pageIndex )
+                options.push(<option key={"SelectOption:"+index}>{index}</option>);
+        } 
+        // console.log(options);
+        return options; 
+    };
     
     render() {
         return (
-            <table style={{width: "100%",textAlign: "center", borderCollapse: "collapse"}}>
-                <thead style={{ backgroundColor: "#8570fa"}}>
-                    <tr>
-                        {this.getHeader()}
-                    </tr>
-                </thead>
-                <tbody>
-                    {this.gettabledatas()}
-                </tbody>
-            </table>
+            <>
+                <div style={{backgroundColor: "rgb(133 112 250)", width: "100%"}}>
+                    <ControlButton able={this.state.canPrevious} onClick={this.goPrevious}> &lt;&lt; </ControlButton>
+                    <ControlButton able={this.state.canForward} onClick={this.goForward}>  &gt;&gt; </ControlButton>
+                    <select name="select"> 
+                        {this.getOptions()}
+                    </select>
+                </div>
+                <table style={{width: "100%",textAlign: "center", borderCollapse: "collapse"}}>
+                    <thead style={{ backgroundColor: "#8570fa"}}>
+                        <tr>
+                            {this.getHeader()}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.gettabledatas()}
+                    </tbody>
+                </table>
+            </>
         )
     }
 };

@@ -150,20 +150,20 @@ class ContainerTable extends Component{
 
 
       {this.state.showCustomAlert ?
-          <CustomAlerts
-            textAlert= "Carro foi alterado com sucesso! "
-            successAlert = {true}
-            alertObject ={
-              this.state.showCustomAlert
-            }
-            showCustomAlert = {
-              this.showAlert
-            }
-            closeTime = {4000}
-          /> 
-          :
-          null
-        } 
+        <CustomAlerts
+          textAlert= "Carro foi alterado com sucesso! "
+          successAlert = {true}
+          alertObject ={
+            this.state.showCustomAlert
+          }
+          showCustomAlert = {
+            this.showAlert
+          }
+          closeTime = {4000}
+        /> 
+        :
+        null
+      } 
       {this.state.showModalCar ?
           <ModalCar 
             carObject={
