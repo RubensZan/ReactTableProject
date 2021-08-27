@@ -18,10 +18,10 @@ import TableRow from '../tableRow';
 class CustomTable extends Component {
     constructor(props) {
         super(props);
-
-        let pageRows = 9;
-        let totalRows = this.props.tableRowsValues.length;
-        let totalPages = Math.ceil(totalRows / pageRows);
+        // Const  
+        const pageRows = 11;
+        const totalRows = this.props.tableRowsValues.length;
+        const totalPages = Math.ceil(totalRows / pageRows);
         this.state = {
             pageIndex: 1,
             firstRow: 0,
@@ -29,7 +29,9 @@ class CustomTable extends Component {
             canPrevious: false,
             rowsPerPage: pageRows,
             totalRows: totalRows,
-            totalPages: totalPages
+            totalPages: totalPages,
+
+            selectedOption: 1
         }
 
         this.goForward = this.goForward.bind(this)
@@ -94,9 +96,8 @@ class CustomTable extends Component {
 
     };
 
-    mountCollumnsData(row, collumn, i) {
+    mountCollumnsData(collumn, row, i) {
         let value = row[collumn.collumnValue];
-        console.log("VALOR",value);
         if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
             value = collumn.valueFormatter(value, row);
         if (collumn.type === "text")
@@ -157,53 +158,14 @@ class CustomTable extends Component {
                     expandedType={this.props.expandedType}
                 >
                     {collumns.map((collumn, j) => {
-                        // return this.mountCollumnsData(collumn, row, i)
-                        let value = row[collumn.collumnValue];
-                        if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
-                            value = collumn.valueFormatter(value, row);
-                        if (collumn.type === "text")
-                            return (
-                                <td key={"CollumnsKey:" + row + value}>
-                                    {value}
-                                </td>
-                            )
-
-                        else if (collumn.type === "button")
-                            return (
-                                <td key={"CollumnsButtonKey:" + row + value}
-                                    onClick={(event) => event.stopPropagation()}
-                                >
-                                    <button onClick={() => collumn.handleClick(value)}>Visualizar</button>
-                                </td>
-                            )
-
-                        else if (collumn.type === "icon")
-                            return (
-                                <td key={"CollumnsButtonKey:" + row + value}
-                                    style={{ position: "relative" }}
-                                >
-                                    {(i % 2 === 0) && (i % 3 === 0) ?
-                                        <FontAwesomeIcon icon={faBan} style={{
-                                            fontSize: "18px", position: "absolute",
-                                            top: "50%", left: "50%", transform: "translate(-50%, -50%)"
-                                        }} />
-                                        :
-                                        <FontAwesomeIcon icon={faCheckCircle} style={{
-                                            fontSize: "18px", position: "absolute",
-                                            top: "50%", left: "50%", transform: "translate(-50%, -50%)"
-                                        }} />
-                                    }
-                                </td>
-                            )
-                        else return null 
-                    }
-                    )}
+                        return this.mountCollumnsData(collumn, row, i);
+                    })}
                 </TableRow>
             )
         }
+        
         return windowRows;
     };
-
 
     getHeader() {
         let headerTitles = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
@@ -219,13 +181,17 @@ class CustomTable extends Component {
     };
 
     getOptions() {
-        let options = [<option selected key={"SelectOption", this.state.pageIndex}>{this.state.pageIndex}</option>];
-        for (let index = 1; index < this.state.totalPages; ++index) {
-            if (index !== this.state.pageIndex)
-                options.push(<option key={"SelectOption:" + index}>{index}</option>);
+        // let options = [<option onChange={this.setChangedSelect} selected key={"SelectOption"+this.state.pageIndex}>{this.state.pageIndex}</option>];
+        let options = []; 
+        for (let index = 1; index <= this.state.totalPages; index++) {
+            options.push(<option key={"SelectOption:" + index}>{index}</option>);
         }
-        // console.log(options);
         return options;
+    };
+
+    setChangedSelect = selectedOption => {
+        this.setState({selectedOption}); 
+        console.log(selectedOption);
     };
 
     render() {
@@ -234,7 +200,7 @@ class CustomTable extends Component {
                 <div style={{ backgroundColor: "rgb(133 112 250)", width: "100%" }}>
                     <ControlButton able={this.state.canPrevious} onClick={this.goPrevious}> &lt;&lt; </ControlButton>
                     <ControlButton able={this.state.canForward} onClick={this.goForward}>  &gt;&gt; </ControlButton>
-                    <select name="select">
+                    <select onChange={this.setChangedSelect} value={this.state.pageIndex} name="select">
                         {this.getOptions()}
                     </select>
                 </div>
