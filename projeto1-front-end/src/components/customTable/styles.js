@@ -8,3 +8,10 @@ export const ControlButton = styled.button`
     cursor: ${props => props.able ? "pointer" : "not-allowed" }
 `;
 
+export const ViewModal = styled.button`
+    background-image: linear-gradient(to right, rgba(255,0,0,0), #b5b5b5);
+    color: #000000;
+    cursor: pointer;
+    border: 2px solid #919191;
+`;
+

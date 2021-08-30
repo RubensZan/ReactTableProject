@@ -31,24 +31,26 @@ export default function ExtendedTableRow(props){
     function getExpandibleBoxes(){
         // not altering its values 
         // the keys of the fieldlist are the titles from the box(es)
-        let titles = Object.keys(props.fieldList); 
-        let fieldList = Object.values(props.fieldList);
-        let fieldValues = Object.values(props.fieldValues);
-        return(
-            titles.map((title,index)=>{
-                    return (
-                        <div key={"BoxWrapper"+title} style={style.boxWrapper}>
-                            <h1 style={style.extendedLineTitle}>{title}</h1>
-                            <button onClick={()=>handleClick(index)} style={style.boxButton}>
-                                { (boxColapsed === index) ? 
-                                    <FontAwesomeIcon icon={faArrowUp} id={props.index}  style={{fontSize:"30px",color:"#363636"}}/> 
-                                    : 
-                                    <FontAwesomeIcon icon={faArrowRight} id={props.index} style={{fontSize:"30px",color:"#363636"}}/>
-                                }
-                            </button>
-
-                            { props.expansible && props.expandedType === "lines" ? 
-                                (boxColapsed === index) ? 
+        let titles;      
+        let fieldList;   
+        let fieldValues; 
+        if (props.expansible && props.expandedType === "lines" ){
+            titles = Object.keys(props.fieldList); 
+            fieldList = Object.values(props.fieldList);
+            fieldValues= Object.values(props.fieldValues);
+            return(
+                titles.map((title,index)=>{
+                        return (
+                            <div key={"BoxWrapper"+title} style={style.boxWrapper}>
+                                <h1 style={style.extendedLineTitle}>{title}</h1>
+                                <button onClick={()=>handleClick(index)} style={style.boxButton}>
+                                    { (boxColapsed === index) ? 
+                                        <FontAwesomeIcon icon={faArrowUp} id={props.index}  style={{fontSize:"30px",color:"#363636"}}/> 
+                                        : 
+                                        <FontAwesomeIcon icon={faArrowRight} id={props.index} style={{fontSize:"30px",color:"#363636"}}/>
+                                    }
+                                </button>
+                                {(boxColapsed === index) ? 
                                     <ExpandedRowContent
                                         key= {"ExpandedRowContent"+index}
                                         fieldList = {fieldList[index]}
@@ -56,17 +58,14 @@ export default function ExtendedTableRow(props){
                                     />
                                 :
                                 null
-                                
-                            :   ((boxColapsed === index) && (typeof props.mountExpanded === "function")) ? 
-                                props.mountExpanded(props.index)
-                                :
-                                null
-                            }
-                        </div>
-                    );    
-                })
-        )
-        
+                                }
+                            </div>
+                        );    
+                    })
+                )}
+
+                else if (typeof props.mountExpanded === "function")
+                    return props.mountExpanded(props.index)
     };
     
     return (   

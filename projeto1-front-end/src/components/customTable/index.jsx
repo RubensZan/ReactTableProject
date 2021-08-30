@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ControlButton } from './styles';
+import { ControlButton, ViewModal } from './styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckCircle, faBan } from '@fortawesome/free-solid-svg-icons';
 import TableRow from '../tableRow';
@@ -18,27 +18,37 @@ import TableRow from '../tableRow';
 class CustomTable extends Component {
     constructor(props) {
         super(props);
-        // Const  
-        const pageRows = 11;
+        console.log(window.innerWidth);
+        const pageRows = 
+        window.innerWidth > 1200 ? 
+            10 
+        : window.innerWidth > 1000 ? 
+            6 : 
+        4;
+        console.log(pageRows);
         const totalRows = this.props.tableRowsValues.length;
         const totalPages = Math.ceil(totalRows / pageRows);
+        //states
         this.state = {
             pageIndex: 1,
             firstRow: 0,
-            canForward: true,
+            canForward: totalPages > 1 ? true : false,
             canPrevious: false,
             rowsPerPage: pageRows,
             totalRows: totalRows,
             totalPages: totalPages,
-
             selectedOption: 1
         }
 
+        // binds
         this.goForward = this.goForward.bind(this)
         this.goPrevious = this.goPrevious.bind(this)
         this.gettabledatas = this.gettabledatas.bind(this)
         this.getOptions = this.getOptions.bind(this)
         this.mountCollumnsData = this.mountCollumnsData.bind(this)
+        this.setChangedSelect = this.setChangedSelect.bind(this)
+
+        console.log("WINDOW INNER HEIGHT",window.innerHeight);
     };
 
     goForward() {
@@ -112,7 +122,7 @@ class CustomTable extends Component {
                 <td key={"CollumnsButtonKey:" + row + value}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <button onClick={() => collumn.handleClick(value)}>Visualizar</button>
+                    <ViewModal onClick={() => collumn.handleClick(value)}>Visualizar</ViewModal>
                 </td>
             )
 
@@ -142,7 +152,6 @@ class CustomTable extends Component {
         let rows = (Array.isArray(this.props.tableRowsValues) ? this.props.tableRowsValues : Object.values(this.props.tableRowsValues));
         let collumns = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         let windowRows = [];
-        // FAZER COM FOR 
         for (let i = this.state.firstRow; i < this.state.firstRow + this.state.rowsPerPage && i < this.state.totalRows; i++) {
             let row = rows[i];
             windowRows.push(
@@ -179,7 +188,7 @@ class CustomTable extends Component {
             })
         )
     };
-
+    
     getOptions() {
         // let options = [<option onChange={this.setChangedSelect} selected key={"SelectOption"+this.state.pageIndex}>{this.state.pageIndex}</option>];
         let options = []; 
@@ -189,9 +198,15 @@ class CustomTable extends Component {
         return options;
     };
 
-    setChangedSelect = selectedOption => {
-        this.setState({selectedOption}); 
-        console.log(selectedOption);
+    setChangedSelect(event){
+        let newIndex = Number(event.target.value);
+        console.log("NOVO INDEX",newIndex);
+        this.setState({
+            pageIndex: newIndex, 
+            firstRow: (newIndex-1)*this.state.rowsPerPage, 
+            canForward: newIndex === this.state.totalPages ? false : true, 
+            canPrevious: newIndex === 2 || newIndex === 1 ? false : true
+        }); 
     };
 
     render() {
@@ -200,7 +215,7 @@ class CustomTable extends Component {
                 <div style={{ backgroundColor: "rgb(133 112 250)", width: "100%" }}>
                     <ControlButton able={this.state.canPrevious} onClick={this.goPrevious}> &lt;&lt; </ControlButton>
                     <ControlButton able={this.state.canForward} onClick={this.goForward}>  &gt;&gt; </ControlButton>
-                    <select onChange={this.setChangedSelect} value={this.state.pageIndex} name="select">
+                    <select onChange={this.setChangedSelect} value={this.state.pageIndex}>
                         {this.getOptions()}
                     </select>
                 </div>
