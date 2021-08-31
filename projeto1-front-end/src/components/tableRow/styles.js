@@ -5,4 +5,10 @@ export const Row = styled.tr`
     &:hover{
         background-color: #ffff8f; 
     }
+    height: 
+    ${props => props.windowWidth > 1200 ? "25px" 
+        : props.windowWidth > 845 ? 
+            "48px" 
+            : "71px" 
+        }
 `;

@@ -16,6 +16,7 @@ export default function ExtendedTableRow(props){
     /**
      * @function module:src/components/extendedTableRow/extendedTableRow~handleClick
      * @summary - when the button is clicked, open only the clicked field in the device window 
+     * @param {number} newIndex - When a box is clicked, the index of it´s box will be passed      
      */
     function handleClick(newIndex) {
         let currentIndex = boxColapsed; 
@@ -27,7 +28,11 @@ export default function ExtendedTableRow(props){
     }
     useEffect(()=>{
     },[boxColapsed])
-
+ /**
+     * @function module:src/components/extendedTableRow/extendedTableRow~getExpandibleBoxes
+     * @summary - get the expandible box(es) according to the expanded type
+     * @return expansible boxes of expanded row
+     */
     function getExpandibleBoxes(){
         // not altering its values 
         // the keys of the fieldlist are the titles from the box(es)

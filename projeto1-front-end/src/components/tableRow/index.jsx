@@ -23,19 +23,21 @@ export default function TableRow(props) {
     function extendtable() {
         setExtendTable(!extend);
     }
-    // console.log("PROPS TABLEROW",props);
+    console.log("INNER WIDTH:",window.innerWidth);
+
+    
     return (
         <>
             <Row 
+                windowWidth = {window.innerWidth}
                 index = {props.lineIndex}  
                 onClick={() => extendtable()} 
-                >
+            >
                 {props.children}
             </Row>
             {extend && props.expansible ?
                     <tr>
                         <td style={{backgroundColor:"#cfc7ff"}} colSpan="100%">
-                            
                             <ExtendedTableRow
                                 mountExpanded={props.mountExpanded}
                                 expansible={props.expansible}

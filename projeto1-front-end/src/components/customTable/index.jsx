@@ -18,7 +18,8 @@ import TableRow from '../tableRow';
 class CustomTable extends Component {
     constructor(props) {
         super(props);
-        console.log(window.innerWidth);
+        // console.log(window.innerWidth);
+        // setting the quantity of rows in the page in relation with the vw
         const pageRows = 
         window.innerWidth > 1200 ? 
             10 
@@ -48,7 +49,7 @@ class CustomTable extends Component {
         this.mountCollumnsData = this.mountCollumnsData.bind(this)
         this.setChangedSelect = this.setChangedSelect.bind(this)
 
-        console.log("WINDOW INNER HEIGHT",window.innerHeight);
+        // console.log("WINDOW INNER HEIGHT",window.innerHeight);
     };
 
     goForward() {

@@ -11,10 +11,14 @@ import cars from './user/users_cars.js';
 import access from './user/users_access.js';
 import products from './user/users_products_buyed.js';
 
+
+
+
+
 class ContainerTable extends Component{
   constructor(props){ 
     super(props);
-    
+      // array with the consumer x product buyed relation
       this.consumerControll = []; 
       this.consumerControll.length = 100; 
       // console.log("ConsumerControll",this.consumerControll);
@@ -226,7 +230,7 @@ class ContainerTable extends Component{
           : 
           null
         }
-        <div style={{height: "50vh", overflowY: "scroll"}}>
+        <div style={{height: "50vh"}}>
             <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#8570fa", margin: "0 0",color: "#fff"}}>
               Tabela de Usuários
             </h1>
@@ -253,7 +257,7 @@ class ContainerTable extends Component{
           />
         </div>
         
-        <div style={{height: "50vh", overflowY: "scroll"}}>
+        <div style={{height: "50vh"}}>
           <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa",margin: "0 0",color: "#fff"}}>
             Tabela de Produtos
           </h1>
