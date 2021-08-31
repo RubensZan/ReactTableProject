@@ -11,10 +11,6 @@ import cars from './user/users_cars.js';
 import access from './user/users_access.js';
 import products from './user/users_products_buyed.js';
 
-
-
-
-
 class ContainerTable extends Component{
   constructor(props){ 
     super(props);
@@ -56,7 +52,7 @@ class ContainerTable extends Component{
         "Acesso": [
           {label: "Rede",fieldKey: "user_access_business_technoloy"},
           {label: "Login",fieldKey: "user_access_login"},
-          {label: "SO",fieldKey: "userOs"},
+          {label: "SO",fieldKey: "user_access_user_agent"},
           {label: "IP",fieldKey: "user_access_ip_address"}
         ],
         "Endereço" : [
@@ -230,7 +226,7 @@ class ContainerTable extends Component{
           : 
           null
         }
-        <div style={{height: "50vh"}}>
+        <div style={{height: "50vh", overflowY: "scroll"}}>
             <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#8570fa", margin: "0 0",color: "#fff"}}>
               Tabela de Usuários
             </h1>
@@ -257,7 +253,7 @@ class ContainerTable extends Component{
           />
         </div>
         
-        <div style={{height: "50vh"}}>
+        <div style={{height: "50vh", overflowY: "scroll"}}>
           <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa",margin: "0 0",color: "#fff"}}>
             Tabela de Produtos
           </h1>

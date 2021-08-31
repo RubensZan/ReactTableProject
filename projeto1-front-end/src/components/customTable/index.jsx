@@ -220,7 +220,7 @@ class CustomTable extends Component {
                         {this.getOptions()}
                     </select>
                 </div>
-                <table style={{ width: "100%", textAlign: "center", borderCollapse: "collapse" }}>
+                <table style={{ width: "100%", textAlign: "center", borderCollapse: "collapse"}}>
                     <thead style={{ backgroundColor: "#8570fa" }}>
                         <tr>
                             {this.getHeader()}
