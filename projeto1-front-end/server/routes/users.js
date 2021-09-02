@@ -7,4 +7,5 @@ module.exports = function (app) {
 
     app.route('/users/list')
         .get(users.list_all_users)
+
 };

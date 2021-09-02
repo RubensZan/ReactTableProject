@@ -90,8 +90,6 @@ class ContainerTable extends Component{
         {headerName: "Departamento",collumnValue: "user_product_buyed_commerce_department", type: "text"},
         {headerName: "Preço",collumnValue: "user_product_buyed_product_price", type: "text"}
       ]
-      
-    
     }; 
 
     // Binds
