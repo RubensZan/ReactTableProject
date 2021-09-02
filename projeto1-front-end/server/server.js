@@ -16,5 +16,5 @@ users_route(app);
 
 
 app.listen(port, () => {
-  console.log(`Example nodemon listening at http://localhost:${port}`)
+  console.log(`Nodemon listening at http://localhost:${port}`)
 })
