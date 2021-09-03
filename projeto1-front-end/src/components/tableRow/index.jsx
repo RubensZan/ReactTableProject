@@ -23,7 +23,7 @@ export default function TableRow(props) {
     function extendtable() {
         setExtendTable(!extend);
     }
-    console.log("INNER WIDTH:",window.innerWidth);
+    // console.log("INNER WIDTH:",window.innerWidth);
 
     
     return (

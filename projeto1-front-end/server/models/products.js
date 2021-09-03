@@ -2,7 +2,7 @@
 const { Client } = require('pg');
 
 
-module.exports = function getUserList() {
+module.exports = function getProductsList() {
     const db = new Client({
         user: 'postgres',
         host: 'localhost',
@@ -17,7 +17,7 @@ module.exports = function getUserList() {
     };
 
     function handleError(err) {
-        console.log("ERRO NO MODEL/USER", err);
+        console.log("ERRO NO MODEL/PRODUCTS", err);
         result.err = err;
         db.end();
 
@@ -25,13 +25,7 @@ module.exports = function getUserList() {
     }
 
     function executeQuery() {
-        // let selectUsersQuery = ` SELECT * FROM users_data.users`;
-        let selectUsersQuery = ` SELECT users.user_id, birth_date, users.name, title, salary, currency_symbol
-        FROM users_data.users
-            left join users_data.users_job
-            on users.user_id = users_job.user_id
-                left join users_data.job 
-                on users_job.job_id = job.job_id order by user_id asc; `;
+        let selectProductsQuery = ` SELECT * FROM users_data.products`;
         
 
         function handleSuccess(res) {
@@ -40,7 +34,7 @@ module.exports = function getUserList() {
             return result;
         }
 
-        return db.query(selectUsersQuery).then(handleSuccess).catch(handleError)
+        return db.query(selectProductsQuery).then(handleSuccess).catch(handleError)
     }
 
     return db.connect().then(executeQuery).catch(handleError)

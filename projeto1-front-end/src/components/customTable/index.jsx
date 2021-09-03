@@ -26,7 +26,7 @@ class CustomTable extends Component {
         : window.innerWidth > 1000 ? 
             6 : 
         4;
-        console.log(pageRows);
+        // console.log(pageRows);
         const totalRows = this.props.tableRowsValues.length;
         const totalPages = Math.ceil(totalRows / pageRows);
         //states
@@ -201,7 +201,7 @@ class CustomTable extends Component {
 
     setChangedSelect(event){
         let newIndex = Number(event.target.value);
-        console.log("NOVO INDEX",newIndex);
+        // console.log("NOVO INDEX",newIndex);
         this.setState({
             pageIndex: newIndex, 
             firstRow: (newIndex-1)*this.state.rowsPerPage, 

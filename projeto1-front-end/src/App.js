@@ -10,41 +10,21 @@ import address from './user/users_address.js';
 import cars from './user/users_cars.js';
 import access from './user/users_access.js';
 import products from './user/users_products_buyed.js';
+import OnLoadPage from './components/onLoadPage';
+import OnErrorPage from './components/onErrorPage';
+
+
 
 class ContainerTable extends Component{
   constructor(props){ 
     super(props);
-      // array with the consumer x product buyed relation
-      this.consumerControll = []; 
-      this.consumerControll.length = 100; 
-      // console.log("ConsumerControll",this.consumerControll);
-      let copy = JSON.parse(JSON.stringify(products));
-      this.myProductsList = Object.values(copy); 
-      this.myUserList = data.map(user=>{
-        const myUser = JSON.parse(JSON.stringify(user));  
-        myUser.currentJob = job[myUser.user_job_id] || {};
-        myUser.currentAddress =  address[myUser.user_address_id] || {}; 
-        myUser.currentAccess = access[myUser.user_access_id] || {};
-        myUser.productsBuyed = products[myUser.user_product_buyed_id] || {};  
-        if (cars[myUser.user_car_id] )
-          myUser.currentCar = {...cars[myUser.user_car_id], userID: myUser.user_id }
-        else 
-          myUser.currentCar = {}; 
-        let productId = myUser.productsBuyed.user_product_buyed_id; 
-        if (this.consumerControll[productId])
-          this.consumerControll[productId].push(myUser); 
-        else  
-          this.consumerControll[productId] = [(myUser)]; 
-        
-        // console.log("COMPROU:",myUser.user_product_buyed_id);
-        // console.log(this.myProductsList.filter((product)=>product.user_product_buyed_id === myUser.user_product_buyed_id));
-        return myUser;
-      });
-
-      // console.log("CONSUMER CONTROLL:",this.consumerControll);
   
     // States
     this.state = {
+      isLoaded: false, 
+      error: null,
+      usersData: null, 
+      productsData: null, 
       showModalCar : null,
       allUsers : this.myUserList,
       showCustomAlert: false,
@@ -84,13 +64,14 @@ class ContainerTable extends Component{
         {headerName: "Status",collumnValue: "",type: "icon"}
       ],
       productTableCollumns: [
-        {headerName: "Produto",collumnValue: "user_product_buyed_product_name", type: "text" },
-        {headerName: "Companhia",collumnValue: "user_product_buyed_company_name", type: "text"},
-        {headerName: "Material",collumnValue: "user_product_buyed_product_material", type: "text"},
-        {headerName: "Departamento",collumnValue: "user_product_buyed_commerce_department", type: "text"},
-        {headerName: "Preço",collumnValue: "user_product_buyed_product_price", type: "text"}
+        {headerName: "Produto",collumnValue: "product_name", type: "text" },
+        {headerName: "Companhia",collumnValue: "company_name", type: "text"},
+        {headerName: "Material",collumnValue: "material", type: "text"},
+        {headerName: "Departamento",collumnValue: "buyed_commerce_department", type: "text"},
+        {headerName: "Preço",collumnValue: "price", type: "text"}
       ]
     }; 
+
 
     // Binds
     this.setUsersChanges = this.setUsersChanges.bind(this)
@@ -98,9 +79,29 @@ class ContainerTable extends Component{
     this.closeModal = this.closeModal.bind(this)
     this.showAlert = this.showAlert.bind(this)
     this.mountExtendedProductTable = this.mountExtendedProductTable.bind(this); 
+
   };
 
   //Functions
+  componentDidMount(){
+    Promise.all([
+      fetch("http://localhost:3010/users/list").then(res => res.json()),
+      fetch("http://localhost:3010/products/list").then(res => res.json())
+    ]).then(([usersData,productsData])=>{
+      this.setState({
+        usersData: usersData,
+        productsData: productsData,
+        isLoaded: true
+      });
+    }).catch(err => {
+          console.log("ERRO!! ",err);
+          this.setState({
+            error: true,
+            isLoaded: true
+          });
+        })
+  };
+
   setUsersChanges (carChanged){
     const newList = this.state.allUsers ;  
     const search = (element) =>  element.user_id === carChanged.userID; 
@@ -190,88 +191,100 @@ class ContainerTable extends Component{
 
   
   render(){
+    console.log("user data",this.state.usersData);
+    console.log("products data",this.state.productsData);
     return ( 
-      <div style={{height: "100vh"}}>
-      {/* <p>Session Time: {this.state.timer}</p>
-      <p>Cars altereds: {this.state.alteredCar}</p> */}
-      {this.state.showCustomAlert ?
-        <CustomAlerts
-          textAlert= "Carro foi alterado com sucesso! "
-          successAlert = {true}
-          alertObject ={
-            this.state.showCustomAlert
-          }
-          showCustomAlert = {
-            this.showAlert
-          }
-          closeTime = {4000}
-        /> 
-        :
-        null
-      } 
-      {this.state.showModalCar ?
-          <ModalCar 
-            carObject={
-              this.state.showModalCar
+      <>
+      
+      {this.state.isLoaded ? 
+        !this.state.error? 
+        <div style={{height: "100vh"}}>
+          {this.state.showCustomAlert ?
+            <CustomAlerts
+              textAlert= "Carro foi alterado com sucesso! "
+              successAlert = {true}
+              alertObject ={
+                this.state.showCustomAlert
+              }
+              showCustomAlert = {
+                this.showAlert
+              }
+              closeTime = {4000}
+            /> 
+            :
+            null
+          } 
+          {this.state.showModalCar ?
+              <ModalCar 
+                carObject={
+                  this.state.showModalCar
+                }
+                closeHandler = {
+                  this.closeModal
+                } 
+                saveChanges = {
+                  this.setUsersChanges
+                }
+              />
+              : 
+              null
             }
-            closeHandler = {
-              this.closeModal
-            } 
-            saveChanges = {
-              this.setUsersChanges
-            }
-          />
-          : 
-          null
-        }
-        <div style={{height: "50vh", overflowY: "scroll"}}>
-            <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#8570fa", margin: "0 0",color: "#fff"}}>
-              Tabela de Usuários
-            </h1>
-          <CustomTable
-            expansible = {true}
-            key="UserTable"
-            tableName="userTable"
-            tableCollumn = {[
-              {headerName: "Nomes",collumnValue: "user_first_name", type: "text"},
-              {headerName: "Data de Nascimento",collumnValue: "user_birth_date", type: "text"},
-              {headerName: "Genero",collumnValue: "user_gender", type: "text"},
-              {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
-              {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
-              {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
-              {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal},
-              {headerName: "Status",collumnValue: "",type: "icon"}
-            ]}
-            tableRowsValues = {this.myUserList}
-            fieldList = {
-              this.state.userTablefieldListConfig
-            }
-            fieldValues = {{"Acesso": "currentAccess","Endereço": "currentAddress","Emprego": "currentJob","Produto Comprado": "productsBuyed"}}
-            expandedType = "lines"
-          />
-        </div>
-        
-        <div style={{height: "50vh", overflowY: "scroll"}}>
-          <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa",margin: "0 0",color: "#fff"}}>
-            Tabela de Produtos
-          </h1>
-          <CustomTable
-            expansible = {true}
-            key="ProductTable"
-            tableName="productTable"
-            tableCollumn = {this.state.productTableCollumns}
-            tableRowsValues = {this.myProductsList}
-            expandedType = "table"
-            mountExpanded = {this.mountExtendedProductTable}
-            // fieldList = {{
-            //   "Compradores": [
-            //     {label: "Comprador",fieldKey: "consumer"}
-            //   ]
-            // }}
-            // fieldValues = "consumer"
-          />
-        </div>
-      </div>
+
+            
+            <div style={{height: "50vh", overflowY: "scroll"}}>
+                <h1 style={{display: "flex", justifyContent: "center",width: "100%", backgroundColor: "#8570fa", margin: "0 0",color: "#fff"}}>
+                  Tabela de Usuários
+                </h1>
+              <CustomTable
+                expansible = {true}
+                key="UserTable"
+                tableName="userTable"
+                tableCollumn = {[
+                  {headerName: "Nomes",collumnValue: "userName", type: "text"},
+                  {headerName: "Data de Nascimento",collumnValue: "userBirthDate", type: "text"},
+                  {headerName: "Profissão",collumnValue: "jobTitle", type: "text"},
+                  {headerName: "Salário",collumnValue: "salary", type: "text"},
+
+                  // {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
+                  // {headerName: "Salario",collumnValue: "currentJob",type: "text",valueFormatter: (currentJob)=>`${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}`},
+                  // {headerName: "Endereço",collumnValue: "currentAddress",type: "text",valueFormatter: (currentAddress)=> currentAddress.user_address_city},
+                  // {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal}
+                ]}
+                tableRowsValues = {this.state.usersData}
+                fieldList = {
+                  this.state.userTablefieldListConfig
+                }
+                fieldValues = {{"Acesso": "currentAccess","Endereço": "currentAddress","Emprego": "currentJob","Produto Comprado": "productsBuyed"}}
+                expandedType = "lines"
+              />
+            </div>
+            <div style={{height: "50vh", overflowY: "scroll"}}>
+              <h1 style={{display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa",margin: "0 0",color: "#fff"}}>
+                Tabela de Produtos
+              </h1>
+              <CustomTable
+                expansible = {true}
+                key="ProductTable"
+                tableName="productTable"
+                tableCollumn = {this.state.productTableCollumns}
+                tableRowsValues = {this.state.productsData}
+                expandedType = "table"
+                mountExpanded = {this.mountExtendedProductTable}
+
+                // fieldList = {{
+                //   "Compradores": [
+                //     {label: "Comprador",fieldKey: "consumer"}
+                //   ]
+                // }}
+                // fieldValues = "consumer"
+              />
+            </div>
+          </div> :
+          <OnErrorPage/>
+        : 
+        <OnLoadPage/>
+      }
+      </>
     )
   };
 }
