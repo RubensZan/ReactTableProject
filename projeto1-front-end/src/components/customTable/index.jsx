@@ -123,7 +123,7 @@ class CustomTable extends Component {
                 <td key={"CollumnsButtonKey:" + row + value}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <ViewModal onClick={() => collumn.handleClick(value)}>Visualizar</ViewModal>
+                    <ViewModal onClick={() => collumn.handleClick(row.userId)}>Visualizar</ViewModal>
                 </td>
             )
 
@@ -161,7 +161,7 @@ class CustomTable extends Component {
                     mountExpanded={this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"}
                     expansible={this.props.expansible}
                     key={this.props.tableName + "RowKey:" + i}
-                    index={row.user_id ? row.user_id : row.user_product_buyed_id}
+                    index={row.userId ? row.userId : row.productId}
                     userData={row}
                     fieldList={this.props.fieldList}
                     fieldValues={this.props.fieldValues}

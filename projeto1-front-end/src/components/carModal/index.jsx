@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import CustomInput from '../customInput/index';
-import CustomCloseButton from '../customCloseButton'; 
+import CustomCloseButton from '../customCloseButton';
 
 /**
  * @file module:src/components/carModal
@@ -9,14 +9,19 @@ import CustomCloseButton from '../customCloseButton';
  * @param {function} saveChanges 
  * @returns a car modal with the information from the clicked line user
  */
-export default function ModalCar({ carObject, closeHandler, saveChanges }) {
-    const [carChanged, setChanges] = useState({
-        car_manufacturer: (carObject && carObject.car_manufacturer) ? carObject.car_manufacturer : "",
-        car_model: (carObject && carObject.car_model) ? carObject.car_model : "",
-        car_name: (carObject && carObject.car_name) ? carObject.car_name : "",
-        car_fuel: (carObject && carObject.car_fuel) ? carObject.car_fuel : "",
-        userID : (carObject && carObject.userID) ? carObject.userID : ""
-    });
+export default function ModalCar({ carObject, closeHandler, saveChanges, carsArrows }) {
+
+    console.log("MORE THAN ONE CAR?", carsArrows);
+    console.log("Car Object:",carObject);
+    // if (carObject.length < 2){
+        const [carChanged, setChanges] = useState({
+            car_manufacturer: (carObject && carObject.manufacturer) ? carObject.manufacturer : "",
+            car_model: (carObject && carObject.model) ? carObject.model : "",
+            car_name: (carObject && carObject.carName) ? carObject.carName : "",
+            car_fuel: (carObject && carObject.fuel) ? carObject.fuel : "",
+            userID: (carObject && carObject.userID) ? carObject.userID : ""
+        }) 
+    // }
     const [readOnly, setReadOnlyState] = useState(
         true
     )
@@ -30,14 +35,14 @@ export default function ModalCar({ carObject, closeHandler, saveChanges }) {
         if (e.keyCode === 27)
             closeHandler();
 
-        if(e.type === "click")
+        if (e.type === "click")
             closeHandler();
     }
     // setting event listener to close modal in case of esc or outside click
     useEffect(() => {
         window.addEventListener("keydown", closeListener);
         window.addEventListener("click", closeListener);
-        return () => { 
+        return () => {
             window.removeEventListener("keydown", closeListener);
             window.removeEventListener("click", closeListener);
         }
@@ -46,80 +51,89 @@ export default function ModalCar({ carObject, closeHandler, saveChanges }) {
     return (
         <div style={style.parentDiv} >
             <div style={style.modalDiv} onClick={event => event.stopPropagation()} tabIndex="0" ref={myRef}>
-                <div style={style.headerModal}>
-                    <h1 style={{ color: "#ffffff" }}>Carro</h1>
-                    <CustomCloseButton
-                        handleClick={closeHandler}
-                        bgColor= "#4169E1"
-                    />
-                </div>
-                <div style={style.headerModalContent}>
-                    <p style={style.headerModalLine}></p>
-                    <CustomInput
-                        autoFocus={true}
-                        labelName="Marca "
-                        type="text"
-                        value={carChanged.car_manufacturer}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_manufacturer: event.target.value })
-                            )
-                        }
-                        readOnly={readOnly}
-                    />
-                </div>
-                <div style={style.headerModalContent}>
-                    <p style={style.headerModalLine}></p>
-                    <CustomInput
-                        labelName="Modelo "
-                        type="text"
-                        value={carChanged.car_model}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_model: event.target.value })
-                            )
-                        }
-                        readOnly={readOnly}
-                    />
-                </div>
-                <div style={style.headerModalContent}>
-                    <p style={style.headerModalLine}></p>
-                    <CustomInput
-                        labelName="Nome "
-                        type="text"
-                        value={carChanged.car_name}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_name: event.target.value })
-                            )
-                        }
-                        readOnly={readOnly}
-                    />
-                </div>
-                <div style={style.headerModalContent}>
-                    <p style={style.headerModalLine}></p>
-                    <CustomInput
-                        labelName="Combustível "
-                        type="text"
-                        value={carChanged.car_fuel}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_fuel: event.target.value })
-                            )
-                        }
-                        readOnly={readOnly}
-                    />
-                </div>
-                <div style={style.headerModalContent}>
-                    <p style={style.headerModalLine}></p>
-                    {!readOnly ? <input type="submit" value="Salvar" onClick={() => saveChanges(carChanged)}
-                        style={{ ...style.headerButton, backgroundColor: "#42ad55" }} /> : ""}
-                    <button onClick={() => edit()}
-                        style={readOnly ? style.headerDefault : {...style.headerButton,backgroundColor: "#ff0000"}}>
-                        {readOnly ? "Editar" : "Cancelar"}
-                    </button>
-                </div>
-                <p style={style.headerModalLine}></p>
+                {!carsArrows ?
+                    <>
+                        <div style={style.headerModal}>
+                            <h1 style={{ color: "#ffffff" }}>Carro</h1>
+                            <CustomCloseButton
+                                handleClick={closeHandler}
+                                bgColor="#4169E1"
+                            />
+                        </div>
+                        <div style={style.headerModalContent}>
+                            <p style={style.headerModalLine}></p>
+                            <CustomInput
+                                autoFocus={true}
+                                labelName="Marca "
+                                type="text"
+                                value={carChanged.car_manufacturer}
+                                onChange={
+                                    event => setChanges(
+                                        currentState => ({ ...currentState, car_manufacturer: event.target.value })
+                                    )
+                                }
+                                readOnly={readOnly}
+                            />
+                        </div>
+                        <div style={style.headerModalContent}>
+                            <p style={style.headerModalLine}></p>
+                            <CustomInput
+                                labelName="Modelo "
+                                type="text"
+                                value={carChanged.car_model}
+                                onChange={
+                                    event => setChanges(
+                                        currentState => ({ ...currentState, car_model: event.target.value })
+                                    )
+                                }
+                                readOnly={readOnly}
+                            />
+                        </div>
+                        <div style={style.headerModalContent}>
+                            <p style={style.headerModalLine}></p>
+                            <CustomInput
+                                labelName="Nome "
+                                type="text"
+                                value={carChanged.car_name}
+                                onChange={
+                                    event => setChanges(
+                                        currentState => ({ ...currentState, car_name: event.target.value })
+                                    )
+                                }
+                                readOnly={readOnly}
+                            />
+                        </div>
+                        <div style={style.headerModalContent}>
+                            <p style={style.headerModalLine}></p>
+                            <CustomInput
+                                labelName="Combustível "
+                                type="text"
+                                value={carChanged.car_fuel}
+                                onChange={
+                                    event => setChanges(
+                                        currentState => ({ ...currentState, car_fuel: event.target.value })
+                                    )
+                                }
+                                readOnly={readOnly}
+                            />
+                        </div>
+                        <div style={style.headerModalContent}>
+                            <p style={style.headerModalLine}></p>
+                            {!readOnly ? <input type="submit" value="Salvar" onClick={() => saveChanges(carChanged)}
+                                style={{ ...style.headerButton, backgroundColor: "#42ad55" }} /> : ""}
+                            <button onClick={() => edit()}
+                                style={readOnly ? style.headerDefault : { ...style.headerButton, backgroundColor: "#ff0000" }}>
+                                {readOnly ? "Editar" : "Cancelar"}
+                            </button>
+                        </div>
+                        <p style={style.headerModalLine}></p>
+                    </> : 
+                    <div>
+                        <button>&lt;</button>
+                        <button>&gt;</button>
+                    </div>
+                    }
+
             </div>
         </div >
     )
