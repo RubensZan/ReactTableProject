@@ -38,7 +38,8 @@ class CustomTable extends Component {
             rowsPerPage: pageRows,
             totalRows: totalRows,
             totalPages: totalPages,
-            selectedOption: 1
+            selectedOption: 1,
+            currentCar: 0
         }
 
         // binds
@@ -118,14 +119,15 @@ class CustomTable extends Component {
                 </td>
             )
 
-        else if (collumn.type === "button")
+        else if (collumn.type === "button"){
+            // console.log("VALUE",value);    
             return (
                 <td key={"CollumnsButtonKey:" + row + value}
                     onClick={(event) => event.stopPropagation()}
                 >
-                    <ViewModal onClick={() => collumn.handleClick(row.userId)}>Visualizar</ViewModal>
+                    <ViewModal able={value ? true : false} onClick={() => collumn.handleClick(row.userId, this.state.currentCar)}>Visualizar</ViewModal>
                 </td>
-            )
+            )}
 
         else if (collumn.type === "icon")
             return (

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import CustomInput from '../customInput/index';
 import CustomCloseButton from '../customCloseButton';
+import { ControlButton } from './styles';
 
 /**
  * @file module:src/components/carModal
@@ -12,16 +13,25 @@ import CustomCloseButton from '../customCloseButton';
 export default function ModalCar({ carObject, closeHandler, saveChanges, carsArrows }) {
 
     console.log("MORE THAN ONE CAR?", carsArrows);
-    console.log("Car Object:",carObject);
-    // if (carObject.length < 2){
-        const [carChanged, setChanges] = useState({
-            car_manufacturer: (carObject && carObject.manufacturer) ? carObject.manufacturer : "",
-            car_model: (carObject && carObject.model) ? carObject.model : "",
-            car_name: (carObject && carObject.carName) ? carObject.carName : "",
-            car_fuel: (carObject && carObject.fuel) ? carObject.fuel : "",
-            userID: (carObject && carObject.userID) ? carObject.userID : ""
-        }) 
-    // }
+    console.log("Car Object:", carObject);
+
+    const [carChanged, setChanges] = useState({
+        car_manufacturer: (carObject && carObject.manufacturer) ? carObject.manufacturer : "",
+        car_model: (carObject && carObject.model) ? carObject.model : "",
+        car_name: (carObject && carObject.carName) ? carObject.carName : "",
+        car_fuel: (carObject && carObject.fuel) ? carObject.fuel : "",
+        userID: (carObject && carObject.userID) ? carObject.userID : ""
+    })
+
+
+    const [canPrevious, setPreviousCar] = useState(
+        false
+    )
+
+    const [canForward, setForwardCar] = useState(
+        false
+    )
+
     const [readOnly, setReadOnlyState] = useState(
         true
     )
@@ -51,89 +61,84 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
     return (
         <div style={style.parentDiv} >
             <div style={style.modalDiv} onClick={event => event.stopPropagation()} tabIndex="0" ref={myRef}>
-                {!carsArrows ?
-                    <>
-                        <div style={style.headerModal}>
-                            <h1 style={{ color: "#ffffff" }}>Carro</h1>
-                            <CustomCloseButton
-                                handleClick={closeHandler}
-                                bgColor="#4169E1"
-                            />
-                        </div>
-                        <div style={style.headerModalContent}>
-                            <p style={style.headerModalLine}></p>
-                            <CustomInput
-                                autoFocus={true}
-                                labelName="Marca "
-                                type="text"
-                                value={carChanged.car_manufacturer}
-                                onChange={
-                                    event => setChanges(
-                                        currentState => ({ ...currentState, car_manufacturer: event.target.value })
-                                    )
-                                }
-                                readOnly={readOnly}
-                            />
-                        </div>
-                        <div style={style.headerModalContent}>
-                            <p style={style.headerModalLine}></p>
-                            <CustomInput
-                                labelName="Modelo "
-                                type="text"
-                                value={carChanged.car_model}
-                                onChange={
-                                    event => setChanges(
-                                        currentState => ({ ...currentState, car_model: event.target.value })
-                                    )
-                                }
-                                readOnly={readOnly}
-                            />
-                        </div>
-                        <div style={style.headerModalContent}>
-                            <p style={style.headerModalLine}></p>
-                            <CustomInput
-                                labelName="Nome "
-                                type="text"
-                                value={carChanged.car_name}
-                                onChange={
-                                    event => setChanges(
-                                        currentState => ({ ...currentState, car_name: event.target.value })
-                                    )
-                                }
-                                readOnly={readOnly}
-                            />
-                        </div>
-                        <div style={style.headerModalContent}>
-                            <p style={style.headerModalLine}></p>
-                            <CustomInput
-                                labelName="Combustível "
-                                type="text"
-                                value={carChanged.car_fuel}
-                                onChange={
-                                    event => setChanges(
-                                        currentState => ({ ...currentState, car_fuel: event.target.value })
-                                    )
-                                }
-                                readOnly={readOnly}
-                            />
-                        </div>
-                        <div style={style.headerModalContent}>
-                            <p style={style.headerModalLine}></p>
-                            {!readOnly ? <input type="submit" value="Salvar" onClick={() => saveChanges(carChanged)}
-                                style={{ ...style.headerButton, backgroundColor: "#42ad55" }} /> : ""}
-                            <button onClick={() => edit()}
-                                style={readOnly ? style.headerDefault : { ...style.headerButton, backgroundColor: "#ff0000" }}>
-                                {readOnly ? "Editar" : "Cancelar"}
-                            </button>
-                        </div>
-                        <p style={style.headerModalLine}></p>
-                    </> : 
-                    <div>
-                        <button>&lt;</button>
-                        <button>&gt;</button>
-                    </div>
-                    }
+                <div style={style.headerModal}>
+                    <h1 style={{ color: "#ffffff" }}>Carro</h1>
+                    <CustomCloseButton
+                        handleClick={closeHandler}
+                        bgColor="#4169E1"
+                    />
 
+                    <ControlButton able={canPrevious} style={{ position: "absolute", top: "5px", left: "5px" }}>&lt;&lt;</ControlButton>
+                    <ControlButton able={canForward} style={{ position: "absolute", top: "5px", left: "40px" }}>&gt;&gt;</ControlButton>
+
+                </div>
+                <div style={style.headerModalContent}>
+                    <p style={style.headerModalLine}></p>
+                    <CustomInput
+                        autoFocus={true}
+                        labelName="Marca "
+                        type="text"
+                        value={carChanged.car_manufacturer}
+                        onChange={
+                            event => setChanges(
+                                currentState => ({ ...currentState, car_manufacturer: event.target.value })
+                            )
+                        }
+                        readOnly={readOnly}
+                    />
+                </div>
+                <div style={style.headerModalContent}>
+                    <p style={style.headerModalLine}></p>
+                    <CustomInput
+                        labelName="Modelo "
+                        type="text"
+                        value={carChanged.car_model}
+                        onChange={
+                            event => setChanges(
+                                currentState => ({ ...currentState, car_model: event.target.value })
+                            )
+                        }
+                        readOnly={readOnly}
+                    />
+                </div>
+                <div style={style.headerModalContent}>
+                    <p style={style.headerModalLine}></p>
+                    <CustomInput
+                        labelName="Nome "
+                        type="text"
+                        value={carChanged.car_name}
+                        onChange={
+                            event => setChanges(
+                                currentState => ({ ...currentState, car_name: event.target.value })
+                            )
+                        }
+                        readOnly={readOnly}
+                    />
+                </div>
+                <div style={style.headerModalContent}>
+                    <p style={style.headerModalLine}></p>
+                    <CustomInput
+                        labelName="Combustível "
+                        type="text"
+                        value={carChanged.car_fuel}
+                        onChange={
+                            event => setChanges(
+                                currentState => ({ ...currentState, car_fuel: event.target.value })
+                            )
+                        }
+                        readOnly={readOnly}
+                    />
+                </div>
+                <div style={style.headerModalContent}>
+                    <p style={style.headerModalLine}></p>
+                    {!readOnly ? <input type="submit" value="Salvar" onClick={() => saveChanges(carChanged)}
+                        style={{ ...style.headerButton, backgroundColor: "#42ad55" }} /> : ""}
+                    <button onClick={() => edit()}
+                        style={readOnly ? style.headerDefault : { ...style.headerButton, backgroundColor: "#ff0000" }}>
+                        {readOnly ? "Editar" : "Cancelar"}
+                    </button>
+                </div>
+                <p style={style.headerModalLine}></p>
             </div>
         </div >
     )
@@ -159,9 +164,9 @@ const style = {
         backgroundColor: "#000080",
         display: "flex",
         justifyContent: "center",
-        alignItems: "center",
+        alignContent: "center",
         width: "100%",
-        height: "20%",
+        height: "20%"
     },
     headerModalContent: {
         height: "20%",

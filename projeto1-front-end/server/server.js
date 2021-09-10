@@ -8,6 +8,7 @@ const port = 3010;
 const users_route = require("./routes/users")
 const products_route = require("./routes/products")
 const usersCars_route = require("./routes/usersCars")
+const usersAccess_route = require("./routes/usersAccess")
 const productsConsumers_route = require("./routes/productsUsers")
 
 app.use(cors()); 
@@ -21,6 +22,7 @@ users_route(app);
 products_route(app); 
 usersCars_route(app); 
 productsConsumers_route(app);
+usersAccess_route(app); 
 
 
 app.listen(port, () => {

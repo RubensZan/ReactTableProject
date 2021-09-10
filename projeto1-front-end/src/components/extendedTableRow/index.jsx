@@ -41,28 +41,24 @@ export default function ExtendedTableRow(props){
         let fieldValues; 
         if (props.expansible && props.expandedType === "lines" ){
             titles = Object.keys(props.fieldList); 
-            fieldList = Object.values(props.fieldList);
-            fieldValues= Object.values(props.fieldValues);
+            // fieldList = Object.values(props.fieldList);
+            // fieldValues= Object.values(props.fieldValues);
             return(
-                titles.map((title,index)=>{
+                titles.map((title,field)=>{
                         return (
                             <div key={"BoxWrapper"+title} style={style.boxWrapper}>
                                 <h1 style={style.extendedLineTitle}>{title}</h1>
-                                <button onClick={()=>handleClick(index)} style={style.boxButton}>
-                                    { (boxColapsed === index) ? 
+                                <button onClick={()=>handleClick(field)} style={style.boxButton}>
+                                    { (boxColapsed === field) ? 
                                         <FontAwesomeIcon icon={faArrowUp} id={props.index}  style={{fontSize:"30px",color:"#363636"}}/> 
                                         : 
                                         <FontAwesomeIcon icon={faArrowRight} id={props.index} style={{fontSize:"30px",color:"#363636"}}/>
                                     }
                                 </button>
-                                {(boxColapsed === index) ? 
-                                    <ExpandedRowContent
-                                        key= {"ExpandedRowContent"+index}
-                                        fieldList = {fieldList[index]}
-                                        fieldValues = {props.thisUserData[fieldValues[index]]}
-                                    />
-                                :
-                                null
+                                {(boxColapsed === field && typeof props.mountExpanded === "function") ?
+                                        props.mountExpanded(props.index, field)
+                                    :
+                                    null
                                 }
                             </div>
                         );    

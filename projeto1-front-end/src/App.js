@@ -25,6 +25,7 @@ class ContainerTable extends Component {
       isLoaded: false,
       error: null,
       usersData: null,
+      usersAccessData: null, 
       productsData: null,
       productsConsumersData: null, 
       showModalCar: null,
@@ -82,8 +83,11 @@ class ContainerTable extends Component {
     this.closeModal = this.closeModal.bind(this)
     this.showAlert = this.showAlert.bind(this)
     this.mountExtendedProductTable = this.mountExtendedProductTable.bind(this);
+    this.mountExtendedUserTable = this.mountExtendedUserTable.bind(this);
     this.getJobsTitles = this.getJobsTitles.bind(this);
     this.getSalary = this.getSalary.bind(this);
+    this.getJobAddress = this.getJobAddress.bind(this);
+    this.getAccessLogin = this.getAccessLogin.bind(this);
 
   };
 
@@ -94,12 +98,14 @@ class ContainerTable extends Component {
       fetch("http://localhost:3010/products/list").then(res => res.json()),
       fetch("http://localhost:3010/users/cars").then(res => res.json()),
       fetch("http://localhost:3010/products/consumers").then(res => res.json()),
-    ]).then(([usersData, productsData, usersCarsData, consumersData]) => {
+      fetch("http://localhost:3010/users/access").then(res => res.json()),
+    ]).then(([usersData, productsData, usersCarsData, consumersData, usersAccessData]) => {
       this.setState({
         usersData: usersData,
         productsData: productsData,
         usersCarsData: usersCarsData, 
         productsConsumersData: consumersData,
+        usersAccessData: usersAccessData,
         isLoaded: true
       });
     }).catch(err => {
@@ -125,6 +131,7 @@ class ContainerTable extends Component {
 
   // map the jobs array and return the job(s) title(s)
   getJobsTitles(row){
+    // console.log(row);
     let allJobsTitles = []; 
     let jobs = row.jobs; 
     for (let i = 0; i < jobs.length; i++){
@@ -154,21 +161,40 @@ class ContainerTable extends Component {
     return allJobsSalary;
   }
 
+  getJobAddress(row){
+    let allJobsAddress = []; 
+    let jobs = row.jobs; 
+    for (let i = 0; i < jobs.length; i++){
+      let job = jobs[i]; 
+      if (job.address)
+      allJobsAddress += job.address + " | "; 
+    }
+    if (typeof allJobsAddress === "string")
+      allJobsAddress = allJobsAddress.substring(0, allJobsAddress.length - 3); 
+    return allJobsAddress;
+  }
+
+  getAccessLogin(row){
+
+  }
+
   // receiving user id
-  showModal(dataId) {
+  showModal(dataId, currentCar) {
     console.log("DATA ID : ", dataId);
     // console.log("car from user",this.state.usersCarsData[dataId]);
     let carObject = this.state.usersCarsData[dataId]; 
     console.log("CAR OBJ",carObject);
-    // Has only one car 
+    // if exist a first car
     if (carObject[0].carName){
+
       if (carObject.length < 2)
         this.setState({
-          showModalCar: carObject[0]
+          showModalCar: carObject[0],
+          carsArrows: false 
         })
       else
         this.setState({
-          showModalCar: carObject,
+          showModalCar: carObject[currentCar],
           carsArrows: true 
         }) 
     }
@@ -221,39 +247,38 @@ class ContainerTable extends Component {
     )
   };
 
-  mountFieldList(fieldValues, fieldList) {
-
-    console.log("FV EH :", fieldValues);
-    return (
-      fieldList.map((field, i) => {
-        return (
-          <div key={"extendedTableRow:" + i}>
-            <p>
-              <strong>{field.label}: </strong>
-              {fieldValues[field.fieldKey]}
-            </p>
-          </div>
-        )
-      })
-    )
+  // Function that will mount the expanded table when called 
+  mountExtendedUserTable(userId, rowId) {
+    console.log("USERID:",userId,"ROWCLICKED",rowId);
+    // Access
+    if (rowId === 0)
+      return (
+      <div>
+      </div>)
+    // Address
+    else if (rowId === 1)
+      return (<div>"1"</div>)
+    // Job
+    else if (rowId === 2){
+      // console.log(this.state.usersData[userId]);
+      return (
+    <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", margin: "0 2%"}}>
+          <p> <strong>Profissão:</strong>{this.getJobsTitles(this.state.usersData[userId])} </p>
+          <p> <strong>Salário:</strong>{this.getSalary(this.state.usersData[userId])} </p>
+          <p> <strong>Endereço:</strong>{this.getJobAddress(this.state.usersData[userId])} </p>
+      </div>)}
+    // Product Buyed
+    else if (rowId === 3)
+      return (<div>"3"</div>)
   };
-
-  // componentDidMount() {
-  //   const intervalId = setInterval(() => {
-  //     this.setState(prevState => {
-  //       return {
-  //         timer: prevState.timer + 1,
-  //       };
-  //     });
-  //   }, 1000);
-  // }
 
 
   render() {
-    // console.log("user data", this.state.usersData);
-    // console.log("products data", this.state.productsData);
-    // console.log("users cars data", this.state.usersCarsData);
-    // console.log("products consumers", this.state.productsConsumersData);
+    console.log("user data", this.state.usersData);
+    console.log("products data", this.state.productsData);
+    console.log("users cars data", this.state.usersCarsData);
+    console.log("products consumers", this.state.productsConsumersData);
+    console.log(" access data", this.state.usersAccessData);
     return (
       <>
 
@@ -308,7 +333,7 @@ class ContainerTable extends Component {
                     { headerName: "Data de Nascimento", collumnValue: "userBirthDate", type: "text" },
                     { headerName: "Profissão", collumnValue: "jobs", type: "text",valueFormatter: this.getJobsTitles },
                     { headerName: "Salário", collumnValue: "jobs", type: "text",valueFormatter: this.getSalary },
-                    {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal}
+                    { headerName: "Carro",collumnValue: "carName",type: "button",handleClick: this.showModal}
 
 
                     // {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
@@ -320,8 +345,9 @@ class ContainerTable extends Component {
                   fieldList={
                     this.state.userTablefieldListConfig
                   }
-                  fieldValues={{ "Acesso": "currentAccess", "Endereço": "currentAddress", "Emprego": "currentJob", "Produto Comprado": "productsBuyed" }}
+                  fieldValues={{ "Acesso": 0, "Endereço": 1, "Emprego": 2, "Produto Comprado": 3}}
                   expandedType="lines"
+                  mountExpanded={this.mountExtendedUserTable}
                 />
               </div>
               <div style={{ height: "50vh", overflowY: "scroll" }}>

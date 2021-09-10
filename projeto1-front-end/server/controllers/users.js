@@ -47,8 +47,8 @@ exports.list_all_users = async function (req, res) {
         result.data.map(user => {
             let jobTitle = user.title ? user.title.replace(/\s+/g, ' ').trim() : null;
             let salary = user.currency_symbol ? user.currency_symbol.replace(/\s+/g, ' ').trim() + " " + user.salary : null;
+            let address = user.address ? user.address.replace(/\s+/g, ' ').trim() : null; 
             let userId = user.user_id;
-            console.log("user id",userId);
             if (!myResult[userId]) {
                 let userName = user.name.replace(/\s+/g, ' ').trim();
                 let date = JSON.stringify(user.birth_date);
@@ -59,13 +59,13 @@ exports.list_all_users = async function (req, res) {
                 let minutes = date.substr(15, 2);
                 let seconds = date.substr(18, 2);
                 let userBirthDate = day + "/" + month + "/" + year + " " + hour + ":" + minutes + ":" + seconds;
-                jobs = [{ jobTitle, salary }];
+                jobs = [{ jobTitle, salary, address }];
                 myResult[userId] = {userId, userName, userBirthDate, jobs };
             }
             // if user already exists, new job and salary 
             else {
                 // if is a new job, will push the new jobTitle and salary in the jobs 
-                myResult[userId].jobs.push({jobTitle, salary});
+                myResult[userId].jobs.push({jobTitle, salary, address});
             }
         })
     }
