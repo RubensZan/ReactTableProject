@@ -4,12 +4,12 @@ import { UAParser } from 'ua-parser-js';
 import CustomTable from './components/customTable';
 import ModalCar from './components/carModal';
 import CustomAlerts from './components/customAlerts';
-import data from './user/users.js';
-import job from './user/users_job.js';
-import address from './user/users_address.js';
-import cars from './user/users_cars.js';
-import access from './user/users_access.js';
-import products from './user/users_products_buyed.js';
+// import data from './user/users.js';
+// import job from './user/users_job.js';
+// import address from './user/users_address.js';
+// import cars from './user/users_cars.js';
+// import access from './user/users_access.js';
+// import products from './user/users_products_buyed.js';
 import OnLoadPage from './components/onLoadPage';
 import OnErrorPage from './components/onErrorPage';
 
@@ -82,6 +82,8 @@ class ContainerTable extends Component {
     this.closeModal = this.closeModal.bind(this)
     this.showAlert = this.showAlert.bind(this)
     this.mountExtendedProductTable = this.mountExtendedProductTable.bind(this);
+    this.getJobsTitles = this.getJobsTitles.bind(this);
+    this.getSalary = this.getSalary.bind(this);
 
   };
 
@@ -120,6 +122,37 @@ class ContainerTable extends Component {
     }, 5000)
     this.closeModal();
   };
+
+  // map the jobs array and return the job(s) title(s)
+  getJobsTitles(row){
+    let allJobsTitles = []; 
+    let jobs = row.jobs; 
+    for (let i = 0; i < jobs.length; i++){
+      let job = jobs[i];
+      if (job.jobTitle)
+        allJobsTitles += job.jobTitle + " | "; 
+    }
+    if (typeof allJobsTitles === "string")
+      allJobsTitles = allJobsTitles.substring(0, allJobsTitles.length - 3); 
+    return allJobsTitles; 
+  }
+  /**
+  * @function- getSalary
+  * @param{array} - row from the user that contains the jobs data 
+  * @returns array containing the job salary data 
+  */
+  getSalary(row){
+    let allJobsSalary = []; 
+    let jobs = row.jobs; 
+    for (let i = 0; i < jobs.length; i++){
+      let job = jobs[i]; 
+      if (job.salary)
+        allJobsSalary += job.salary + " | "; 
+    }
+    if (typeof allJobsSalary === "string")
+      allJobsSalary = allJobsSalary.substring(0, allJobsSalary.length - 3); 
+    return allJobsSalary;
+  }
 
   // receiving user id
   showModal(dataId) {
@@ -201,8 +234,7 @@ class ContainerTable extends Component {
             </p>
           </div>
         )
-      }
-      )
+      })
     )
   };
 
@@ -274,8 +306,8 @@ class ContainerTable extends Component {
                   tableCollumn={[
                     { headerName: "Nomes", collumnValue: "userName", type: "text" },
                     { headerName: "Data de Nascimento", collumnValue: "userBirthDate", type: "text" },
-                    { headerName: "Profissão", collumnValue: "jobTitle", type: "text" },
-                    { headerName: "Salário", collumnValue: "salary", type: "text" },
+                    { headerName: "Profissão", collumnValue: "jobs", type: "text",valueFormatter: this.getJobsTitles },
+                    { headerName: "Salário", collumnValue: "jobs", type: "text",valueFormatter: this.getSalary },
                     {headerName: "Carro",collumnValue: "currentCar",type: "button",handleClick: this.showModal}
 
 

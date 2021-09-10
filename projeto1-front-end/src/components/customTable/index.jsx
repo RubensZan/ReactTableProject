@@ -20,12 +20,12 @@ class CustomTable extends Component {
         super(props);
         // console.log(window.innerWidth);
         // setting the quantity of rows in the page in relation with the vw
-        const pageRows = 
-        window.innerWidth > 1200 ? 
-            10 
-        : window.innerWidth > 1000 ? 
-            6 : 
-        4;
+        const pageRows =
+            window.innerWidth > 1200 ?
+                10
+                : window.innerWidth > 1000 ?
+                    6 :
+                    4;
         // console.log(pageRows);
         const totalRows = this.props.tableRowsValues.length;
         const totalPages = Math.ceil(totalRows / pageRows);
@@ -110,7 +110,7 @@ class CustomTable extends Component {
     mountCollumnsData(collumn, row, i) {
         let value = row[collumn.collumnValue];
         if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
-            value = collumn.valueFormatter(value, row);
+            value = collumn.valueFormatter(row);
         if (collumn.type === "text")
             return (
                 <td key={"CollumnsKey:" + row + value}>
@@ -145,7 +145,7 @@ class CustomTable extends Component {
                     }
                 </td>
             )
-        else return null 
+        else return null
     };
 
     gettabledatas() {
@@ -154,26 +154,28 @@ class CustomTable extends Component {
         let collumns = (Array.isArray(this.props.tableCollumn) ? this.props.tableCollumn : Object.values(this.props.tableCollumn));
         let windowRows = [];
         for (let i = this.state.firstRow; i < this.state.firstRow + this.state.rowsPerPage && i < this.state.totalRows; i++) {
-            let row = rows[i];
-            windowRows.push(
-                <TableRow
-                    lineIndex={i}
-                    mountExpanded={this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"}
-                    expansible={this.props.expansible}
-                    key={this.props.tableName + "RowKey:" + i}
-                    index={row.userId ? row.userId : row.productId}
-                    userData={row}
-                    fieldList={this.props.fieldList}
-                    fieldValues={this.props.fieldValues}
-                    expandedType={this.props.expandedType}
-                >
-                    {collumns.map((collumn, j) => {
-                        return this.mountCollumnsData(collumn, row, i);
-                    })}
-                </TableRow>
-            )
+            if (rows[i]) {
+                let row = rows[i];
+                windowRows.push(
+                    <TableRow
+                        lineIndex={i}
+                        mountExpanded={this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"}
+                        expansible={this.props.expansible}
+                        key={this.props.tableName + "RowKey:" + i}
+                        index={row.userId ? row.userId : row.product_id}
+                        userData={row}
+                        fieldList={this.props.fieldList}
+                        fieldValues={this.props.fieldValues}
+                        expandedType={this.props.expandedType}
+                    >
+                        {collumns.map((collumn, j) => {
+                            return this.mountCollumnsData(collumn, row, i);
+                        })}
+                    </TableRow>
+                )
+            }
         }
-        
+
         return windowRows;
     };
 
@@ -189,25 +191,25 @@ class CustomTable extends Component {
             })
         )
     };
-    
+
     getOptions() {
         // let options = [<option onChange={this.setChangedSelect} selected key={"SelectOption"+this.state.pageIndex}>{this.state.pageIndex}</option>];
-        let options = []; 
+        let options = [];
         for (let index = 1; index <= this.state.totalPages; index++) {
             options.push(<option key={"SelectOption:" + index}>{index}</option>);
         }
         return options;
     };
 
-    setChangedSelect(event){
+    setChangedSelect(event) {
         let newIndex = Number(event.target.value);
         // console.log("NOVO INDEX",newIndex);
         this.setState({
-            pageIndex: newIndex, 
-            firstRow: (newIndex-1)*this.state.rowsPerPage, 
-            canForward: newIndex === this.state.totalPages ? false : true, 
+            pageIndex: newIndex,
+            firstRow: (newIndex - 1) * this.state.rowsPerPage,
+            canForward: newIndex === this.state.totalPages ? false : true,
             canPrevious: newIndex === 2 || newIndex === 1 ? false : true
-        }); 
+        });
     };
 
     render() {
@@ -220,7 +222,7 @@ class CustomTable extends Component {
                         {this.getOptions()}
                     </select>
                 </div>
-                <table style={{ width: "100%", textAlign: "center", borderCollapse: "collapse"}}>
+                <table style={{ width: "100%", textAlign: "center", borderCollapse: "collapse" }}>
                     <thead style={{ backgroundColor: "#8570fa" }}>
                         <tr>
                             {this.getHeader()}
