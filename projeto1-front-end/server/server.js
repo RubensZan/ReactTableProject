@@ -5,26 +5,40 @@ const app = express();
 // const router = express.Router(); 
 // const bodyParser = require('body-parser')
 const port = 3010;
-const users_route = require("./routes/users")
-const products_route = require("./routes/products")
-const usersCars_route = require("./routes/usersCars")
-const usersAccess_route = require("./routes/usersAccess")
-const productsConsumers_route = require("./routes/productsUsers")
 
-app.use(cors()); 
+const usersAndProducts_route = require ("./routes/listUsersAndProducts")
 
-app.get('/', (req, res) => {
-  res.send('Hey yo go!!!')
+
+app.use(cors());
+app.use(getAccessUsers); 
+
+app.get('/',(req, res) => {
+  // console.log(req.get('User-Agent'));
+  // const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+
+  // console.log(ip);
+  res.send(`Hey yo go!!!`)
 })
 
-//users routes
-users_route(app);
-products_route(app); 
-usersCars_route(app); 
-productsConsumers_route(app);
-usersAccess_route(app); 
-
+usersAndProducts_route(app); 
 
 app.listen(port, () => {
   console.log(`Nodemon listening at http://localhost:${port}`)
 })
+
+function getAccessUsers(req, res, next){
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let date = new Date();
+  
+  console.log(ip);
+  console.log(req.get('User-Agent'));
+  console.log(req.originalUrl);
+  console.log(date);
+  req.date = date; 
+
+  if (req.ip && req.get('User-Agent') && req.originalUrl && req.date)
+    next(); 
+  else{
+    console.log("ERRO!");
+  }
+}

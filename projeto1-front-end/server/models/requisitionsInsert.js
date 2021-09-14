@@ -2,7 +2,7 @@
 const { Client } = require('pg');
 
 
-module.exports = function getUsersAccess() {
+module.exports = function getProductsList() {
     const db = new Client({
         user: 'postgres',
         host: 'localhost',
@@ -17,7 +17,7 @@ module.exports = function getUsersAccess() {
     };
 
     function handleError(err) {
-        console.log("ERRO NO MODEL/USERSCARS", err);
+        console.log("ERRO NO MODEL/REQUISITIONINSERT", err);
         result.err = err;
         db.end();
 
@@ -25,13 +25,9 @@ module.exports = function getUsersAccess() {
     }
 
     function executeQuery() {
-        let selectUsersQuery = ` 
-        SELECT users.user_id, access.business_technology, access.ip_address, access.mac_address, access.user_agent, access.user_login
-        FROM users_data.users
-            left join users_data.users_access
-            on users.user_id = users_access.user_id
-                left join users_data."access"
-                on users_access.access_id = access.access_id order by user_id asc; `;
+        let insertRequisition = `
+        insert into users_data.requisition_data (user_ip, user_agent, inclusion_date, access_path)
+        values ( '${req.ip}', '${req.get('User-Agent')}' ,'${req.date}', '${req.originalUrl}' );`;
         
 
         function handleSuccess(res) {
@@ -40,7 +36,7 @@ module.exports = function getUsersAccess() {
             return result;
         }
 
-        return db.query(selectUsersQuery).then(handleSuccess).catch(handleError)
+        return db.query(insertRequisition).then(handleSuccess).catch(handleError)
     }
 
     return db.connect().then(executeQuery).catch(handleError)

@@ -111,7 +111,7 @@ class CustomTable extends Component {
     mountCollumnsData(collumn, row, i) {
         let value = row[collumn.collumnValue];
         if (collumn.valueFormatter && typeof collumn.valueFormatter === "function")
-            value = collumn.valueFormatter(row);
+            value = collumn.valueFormatter(row, collumn.fieldName, collumn.fieldKey);
         if (collumn.type === "text")
             return (
                 <td key={"CollumnsKey:" + row + value}>

@@ -25,11 +25,8 @@ class ContainerTable extends Component {
       isLoaded: false,
       error: null,
       usersData: null,
-      usersAccessData: null, 
       productsData: null,
-      productsConsumersData: null, 
       showModalCar: null,
-      usersCarsData: null, 
       allUsers: this.myUserList,
       showCustomAlert: false,
       userTablefieldListConfig: {
@@ -68,10 +65,10 @@ class ContainerTable extends Component {
         { headerName: "Status", collumnValue: "", type: "icon" }
       ],
       productTableCollumns: [
-        { headerName: "Produto", collumnValue: "product_name", type: "text" },
-        { headerName: "Companhia", collumnValue: "company_name", type: "text" },
+        { headerName: "Produto", collumnValue: "productName", type: "text" },
+        { headerName: "Companhia", collumnValue: "companyName", type: "text" },
         { headerName: "Material", collumnValue: "material", type: "text" },
-        { headerName: "Departamento", collumnValue: "buyed_commerce_department", type: "text" },
+        { headerName: "Departamento", collumnValue: "buyedCommerceDepartment", type: "text" },
         { headerName: "Preço", collumnValue: "price", type: "text" }
       ]
     };
@@ -84,28 +81,17 @@ class ContainerTable extends Component {
     this.showAlert = this.showAlert.bind(this)
     this.mountExtendedProductTable = this.mountExtendedProductTable.bind(this);
     this.mountExtendedUserTable = this.mountExtendedUserTable.bind(this);
-    this.getJobsTitles = this.getJobsTitles.bind(this);
-    this.getSalary = this.getSalary.bind(this);
-    this.getJobAddress = this.getJobAddress.bind(this);
-    this.getAccessLogin = this.getAccessLogin.bind(this);
+    this.getCollumnFormattedData = this.getCollumnFormattedData.bind(this);
 
   };
 
-  //Functions
   componentDidMount() {
     Promise.all([
-      fetch("http://localhost:3010/users/list").then(res => res.json()),
-      fetch("http://localhost:3010/products/list").then(res => res.json()),
-      fetch("http://localhost:3010/users/cars").then(res => res.json()),
-      fetch("http://localhost:3010/products/consumers").then(res => res.json()),
-      fetch("http://localhost:3010/users/access").then(res => res.json()),
-    ]).then(([usersData, productsData, usersCarsData, consumersData, usersAccessData]) => {
+      fetch("http://localhost:3010/listUsersAndProducts").then(res => res.json())
+    ]).then(([data]) => {
       this.setState({
-        usersData: usersData,
-        productsData: productsData,
-        usersCarsData: usersCarsData, 
-        productsConsumersData: consumersData,
-        usersAccessData: usersAccessData,
+        usersData: data.usersData,
+        productsData: data.productsData,
         isLoaded: true
       });
     }).catch(err => {
@@ -116,7 +102,6 @@ class ContainerTable extends Component {
       });
     })
   };
-
   setUsersChanges(carChanged) {
     const newList = this.state.allUsers;
     const search = (element) => element.user_id === carChanged.userID;
@@ -130,52 +115,18 @@ class ContainerTable extends Component {
   };
 
   // map the jobs array and return the job(s) title(s)
-  getJobsTitles(row){
+  getCollumnFormattedData(row, fieldName, fieldKey){
     // console.log(row);
-    let allJobsTitles = []; 
-    let jobs = row.jobs; 
-    for (let i = 0; i < jobs.length; i++){
-      let job = jobs[i];
-      if (job.jobTitle)
-        allJobsTitles += job.jobTitle + " | "; 
+    let allDataReturn = []; 
+    let rowData = row[fieldName]; 
+    for (let i = 0; i < rowData.length; i++){
+      let fieldValue = rowData[i];
+      if (fieldValue[fieldKey])
+        allDataReturn += fieldValue[fieldKey] + " | "; 
     }
-    if (typeof allJobsTitles === "string")
-      allJobsTitles = allJobsTitles.substring(0, allJobsTitles.length - 3); 
-    return allJobsTitles; 
-  }
-  /**
-  * @function- getSalary
-  * @param{array} - row from the user that contains the jobs data 
-  * @returns array containing the job salary data 
-  */
-  getSalary(row){
-    let allJobsSalary = []; 
-    let jobs = row.jobs; 
-    for (let i = 0; i < jobs.length; i++){
-      let job = jobs[i]; 
-      if (job.salary)
-        allJobsSalary += job.salary + " | "; 
-    }
-    if (typeof allJobsSalary === "string")
-      allJobsSalary = allJobsSalary.substring(0, allJobsSalary.length - 3); 
-    return allJobsSalary;
-  }
-
-  getJobAddress(row){
-    let allJobsAddress = []; 
-    let jobs = row.jobs; 
-    for (let i = 0; i < jobs.length; i++){
-      let job = jobs[i]; 
-      if (job.address)
-      allJobsAddress += job.address + " | "; 
-    }
-    if (typeof allJobsAddress === "string")
-      allJobsAddress = allJobsAddress.substring(0, allJobsAddress.length - 3); 
-    return allJobsAddress;
-  }
-
-  getAccessLogin(row){
-
+    if (typeof allDataReturn === "string")
+      allDataReturn = allDataReturn.substring(0, allDataReturn.length - 3); 
+    return allDataReturn; 
   }
 
   // receiving user id
@@ -218,33 +169,31 @@ class ContainerTable extends Component {
   // Function that will mount the expanded table when called 
   mountExtendedProductTable(productId) {
     // let consumer = this.consumerControll[productId] || {};
-    let consumer = this.state.productsConsumersData[productId] || {}; 
-    console.log("CONSUMERS",consumer);
-    if (consumer[0].userName)
-      return (
-        <div style={{ border: "10px solid #cfc7ff" }}>
-          <CustomTable
-            expansible={false}
-            key="ExtendedProductTable"
-            tableName="ExtendedProductTable"
-            tableCollumn={[
-              { headerName: "Nomes", collumnValue: "userName", type: "text" },
-              { headerName: "Data de Nascimento", collumnValue: "userBirthDate", type: "text" }
-              // { headerName: "Trabalho", collumnValue: "currentJob", type: "text", valueFormatter: (currentJob) => currentJob.user_job_title },
-              // { headerName: "Salario", collumnValue: "currentJob", type: "text", valueFormatter: (currentJob) => `${currentJob.user_job_salary_currency_symbol} ${currentJob.user_job_salary}` },
-              // { headerName: "Endereço", collumnValue: "currentAddress", type: "text", valueFormatter: (currentAddress) => currentAddress.user_address_city }
-            ]}
-            tableRowsValues={consumer}
-          />
-        </div>
-      )
-    return (
-      <div style={{ border: "10px solid #cfc7ff" }}>
-        <h2 style={{ fontSize: "20px", color: "#fff", display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold" }}>
-          Sem consumidores!
-        </h2>
-      </div>
-    )
+    console.log("ROW DATA",this.state.productsData[productId]); 
+    
+    // console.log("CONSUMERS",consumer);
+    // if (consumer && consumer[0].consumerName)
+    //   return (
+    //     <div style={{ border: "10px solid #cfc7ff" }}>
+    //       <CustomTable
+    //         expansible={false}
+    //         key="ExtendedProductTable"
+    //         tableName="ExtendedProductTable"
+    //         tableCollumn={[
+    //           { headerName: "Nomes", collumnValue: "consumerName", type: "text" },
+    //           { headerName: "Data de Nascimento", collumnValue: "consumerBirthDate", type: "text" }
+    //         ]}
+    //         tableRowsValues={consumer}
+    //       />
+    //     </div>
+    //   )
+    // return (
+    //   <div style={{ border: "10px solid #cfc7ff" }}>
+    //     <h2 style={{ fontSize: "20px", color: "#fff", display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold" }}>
+    //       Sem consumidores!
+    //     </h2>
+    //   </div>
+    // )
   };
 
   // Function that will mount the expanded table when called 
@@ -276,9 +225,6 @@ class ContainerTable extends Component {
   render() {
     console.log("user data", this.state.usersData);
     console.log("products data", this.state.productsData);
-    console.log("users cars data", this.state.usersCarsData);
-    console.log("products consumers", this.state.productsConsumersData);
-    console.log(" access data", this.state.usersAccessData);
     return (
       <>
 
@@ -331,8 +277,8 @@ class ContainerTable extends Component {
                   tableCollumn={[
                     { headerName: "Nomes", collumnValue: "userName", type: "text" },
                     { headerName: "Data de Nascimento", collumnValue: "userBirthDate", type: "text" },
-                    { headerName: "Profissão", collumnValue: "jobs", type: "text",valueFormatter: this.getJobsTitles },
-                    { headerName: "Salário", collumnValue: "jobs", type: "text",valueFormatter: this.getSalary },
+                    { headerName: "Profissão", collumnValue: "jobs", type: "text",valueFormatter: this.getCollumnFormattedData, fieldName: "jobs",fieldKey: "jobTitle" },
+                    { headerName: "Salário", collumnValue: "jobs", type: "text",valueFormatter: this.getCollumnFormattedData, fieldName: "jobs",fieldKey: "salary"},
                     { headerName: "Carro",collumnValue: "carName",type: "button",handleClick: this.showModal}
 
 
