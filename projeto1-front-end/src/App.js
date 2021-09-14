@@ -169,31 +169,32 @@ class ContainerTable extends Component {
   // Function that will mount the expanded table when called 
   mountExtendedProductTable(productId) {
     // let consumer = this.consumerControll[productId] || {};
+    console.log("clicked",productId);
     console.log("ROW DATA",this.state.productsData[productId]); 
-    
-    // console.log("CONSUMERS",consumer);
-    // if (consumer && consumer[0].consumerName)
-    //   return (
-    //     <div style={{ border: "10px solid #cfc7ff" }}>
-    //       <CustomTable
-    //         expansible={false}
-    //         key="ExtendedProductTable"
-    //         tableName="ExtendedProductTable"
-    //         tableCollumn={[
-    //           { headerName: "Nomes", collumnValue: "consumerName", type: "text" },
-    //           { headerName: "Data de Nascimento", collumnValue: "consumerBirthDate", type: "text" }
-    //         ]}
-    //         tableRowsValues={consumer}
-    //       />
-    //     </div>
-    //   )
-    // return (
-    //   <div style={{ border: "10px solid #cfc7ff" }}>
-    //     <h2 style={{ fontSize: "20px", color: "#fff", display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold" }}>
-    //       Sem consumidores!
-    //     </h2>
-    //   </div>
-    // )
+    let consumers = this.state.productsData[productId].consumers; 
+    console.log("CONSUMERS",consumers);
+    if (consumers && consumers[0].consumerName)
+      return (
+        <div style={{ border: "10px solid #cfc7ff" }}>
+          <CustomTable
+            expansible={false}
+            key="ExtendedProductTable"
+            tableName="ExtendedProductTable"
+            tableCollumn={[
+              { headerName: "Nomes", collumnValue: "consumerName", type: "text" },
+              { headerName: "Data de Nascimento", collumnValue: "consumerBirthDate", type: "text" }
+            ]}
+            tableRowsValues={consumers}
+          />
+        </div>
+      )
+    return (
+      <div style={{ border: "10px solid #cfc7ff" }}>
+        <h2 style={{ fontSize: "20px", color: "#fff", display: "flex", textAlign: "center", justifyContent: "center", fontWeight: "bold" }}>
+          Sem consumidores!
+        </h2>
+      </div>
+    )
   };
 
   // Function that will mount the expanded table when called 

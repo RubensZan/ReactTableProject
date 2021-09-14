@@ -155,33 +155,34 @@ exports.listUsersAndProducts = async function (req, res) {
         windowResult.usersData = userResult;
     }
 
+    // Products data controller
     if (!productResult.err) {
         let consumers = [];
+        let consumerName;
+        let date;
+        let year;
+        let month;
+        let day;
+        let hour;
+        let minutes;
+        let seconds;
+        let consumerBirthDate;
         productResult.data.map(product => {
             let productId = product.product_id;
             let consumerId = product.user_id || null;
-            let consumer;
-            let date;
-            let year;
-            let month;
-            let day;
-            let hour;
-            let minutes;
-            let seconds;
+            if (consumerId) {
+                consumerName = product.name.replace(/\s+/g, ' ').trim();
+                date = JSON.stringify(product.birth_date);
+                year = date.substr(1, 4);
+                month = date.substr(6, 2);
+                day = date.substr(9, 2);
+                hour = date.substr(12, 2);
+                minutes = date.substr(15, 2);
+                seconds = date.substr(18, 2);
+                consumerBirthDate = day + "/" + month + "/" + year + " " + hour + ":" + minutes + ":" + seconds;
+            }
             if (!windowResult.productsData[productId]) {
-                // if there is a consumer
-                if (consumerId) {
-                    let consumerName = product.name.replace(/\s+/g, ' ').trim();
-                    let date = JSON.stringify(product.birth_date);
-                    let year = date.substr(1, 4);
-                    let month = date.substr(6, 2);
-                    let day = date.substr(9, 2);
-                    let hour = date.substr(12, 2);
-                    let minutes = date.substr(15, 2);
-                    let seconds = date.substr(18, 2);
-                    let consumerBirthDate = day + "/" + month + "/" + year + " " + hour + ":" + minutes + ":" + seconds;
-                    consumer = {consumerId, consumerName, consumerBirthDate}; 
-                }
+                consumers = [{ consumerId, consumerName, consumerBirthDate }];
                 let buyedAppliance = product.buyed_appliance.replace(/\s+/g, ' ').trim();
                 let buyedBussinessTechnology = product.buyed_bussiness_tecnology.replace(/\s+/g, ' ').trim();
                 let buyedCommerceDepartment = product.buyed_commerce_department.replace(/\s+/g, ' ').trim();
@@ -191,13 +192,10 @@ exports.listUsersAndProducts = async function (req, res) {
                 let material = product.material.replace(/\s+/g, ' ').trim();
                 let price = product.price;
                 let buyedBussinessIndustry = product.buyed_bussiness_industry.replace(/\s+/g, ' ').trim();
-                if (!windowResult.productsData[productId]) {
-                    consumers = [consumer]
-                    windowResult.productsData[productId] = { productId, buyedAppliance, buyedBussinessTechnology, buyedCommerceDepartment, companyName, productName, description, material, price, buyedBussinessIndustry, consumers };
-                }
-                else if (checkDuplicate(windowResult.productsData[productId].consumers, "consumerId", consumerId))
-                    windowResult.productsData[productId].consumers.push(consumer);
+                windowResult.productsData[productId] = { productId, buyedAppliance, buyedBussinessTechnology, buyedCommerceDepartment, companyName, productName, description, material, price, buyedBussinessIndustry, consumers };
             }
+            else if (checkDuplicate(windowResult.productsData[productId].consumers, "consumerId", consumerId))
+                windowResult.productsData[productId].consumers.push({ consumerId, consumerName, consumerBirthDate });
         })
     }
     res.json(windowResult);

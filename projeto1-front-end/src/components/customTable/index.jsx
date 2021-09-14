@@ -164,7 +164,7 @@ class CustomTable extends Component {
                         mountExpanded={this.props.mountExpanded ? this.props.mountExpanded : "NOT DEFINED"}
                         expansible={this.props.expansible}
                         key={this.props.tableName + "RowKey:" + i}
-                        index={row.userId ? row.userId : row.product_id}
+                        index={row.userId ? row.userId : row.productId}
                         userData={row}
                         fieldList={this.props.fieldList}
                         fieldValues={this.props.fieldValues}

@@ -6,8 +6,9 @@ const app = express();
 // const bodyParser = require('body-parser')
 const port = 3010;
 
-const usersAndProducts_route = require ("./routes/listUsersAndProducts")
-
+const usersAndProducts_route = require ("./routes/listUsersAndProducts");
+const requisitionHandler = require("./models/requisitionsInsert");
+const requisitionsHistory_route = require("./routes/listRequisitionHistory"); 
 
 app.use(cors());
 app.use(getAccessUsers); 
@@ -21,24 +22,40 @@ app.get('/',(req, res) => {
 })
 
 usersAndProducts_route(app); 
+requisitionsHistory_route(app); 
 
 app.listen(port, () => {
   console.log(`Nodemon listening at http://localhost:${port}`)
 })
 
+/**
+ * @function getAccessUsers
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next
+ * @summary checks the requisition user ip, user agent, req url and date, and calls insertion requisition table function. 
+ */
 function getAccessUsers(req, res, next){
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  let date = new Date();
+  let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  let ts = Date.now();
+  let date_ob = new Date(ts);
   
-  console.log(ip);
-  console.log(req.get('User-Agent'));
-  console.log(req.originalUrl);
-  console.log(date);
-  req.date = date; 
+  if (ip.substr(0, 7) == "::ffff:")
+    ip = ip.substr(7);
+  else if(ip.substr(0, 2) == "::")
+    ip = ip.substr(2);  
 
+  let year = date_ob.getFullYear();
+  let month = date_ob.getMonth() + 1;
+  let day = date_ob.getDate();
+  let hour = date_ob.getHours();
+  let minutes = date_ob.getMinutes();
+  let seconds = date_ob.getSeconds();
+  let userDate = `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`
+  console.log("NEW DATE",userDate);
+  req.date = userDate; 
+  req.ip_config = ip; 
   if (req.ip && req.get('User-Agent') && req.originalUrl && req.date)
-    next(); 
-  else{
-    console.log("ERRO!");
-  }
+    requisitionHandler(req.ip_config, req.get('User-Agent'), req.originalUrl, req.date); 
+  next();
 }

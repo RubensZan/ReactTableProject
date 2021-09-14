@@ -2,7 +2,7 @@
 const { Client } = require('pg');
 
 
-module.exports = function requisitionHandler(user_ip, user_agent,  access_path, user_date) {
+module.exports = function listRequisitionHistory() {
     const db = new Client({
         user: 'postgres',
         host: 'localhost',
@@ -17,7 +17,7 @@ module.exports = function requisitionHandler(user_ip, user_agent,  access_path, 
     };
 
     function handleError(err) {
-        console.log("ERRO NO MODEL/REQUISITIONINSERT", err);
+        console.log("ERRO NO MODEL/LISTREQUISITIONHISTORY", err);
         result.err = err;
         db.end();
 
@@ -25,9 +25,9 @@ module.exports = function requisitionHandler(user_ip, user_agent,  access_path, 
     }
 
     function executeQuery() {
-        let insertRequisition = `
-        insert into users_data.requisition_data (user_ip, user_agent, inclusion_date, access_path)
-            values ( '${user_ip}', '${user_agent}' ,'${user_date}', '${access_path}' );`;
+        let selectRequestHistory = `
+            select user_ip, user_agent, inclusion_date, access_path
+            from users_data.requisition_data;`;
         
 
         function handleSuccess(res) {
@@ -36,7 +36,7 @@ module.exports = function requisitionHandler(user_ip, user_agent,  access_path, 
             return result;
         }
 
-        return db.query(insertRequisition).then(handleSuccess).catch(handleError)
+        return db.query(selectRequestHistory).then(handleSuccess).catch(handleError)
     }
 
     return db.connect().then(executeQuery).catch(handleError)

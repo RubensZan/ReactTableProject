@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowUp,faArrowRight} from '@fortawesome/free-solid-svg-icons'; 
-import ExpandedRowContent from '../expandedRowContent';
 
 /**
  * @file module:src/components/extendedTableRow/index.jsx  
@@ -37,12 +36,8 @@ export default function ExtendedTableRow(props){
         // not altering its values 
         // the keys of the fieldlist are the titles from the box(es)
         let titles;      
-        let fieldList;   
-        let fieldValues; 
         if (props.expansible && props.expandedType === "lines" ){
             titles = Object.keys(props.fieldList); 
-            // fieldList = Object.values(props.fieldList);
-            // fieldValues= Object.values(props.fieldValues);
             return(
                 titles.map((title,field)=>{
                         return (
