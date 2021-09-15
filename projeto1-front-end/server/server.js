@@ -39,12 +39,6 @@ function getAccessUsers(req, res, next){
   let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
   let ts = Date.now();
   let date_ob = new Date(ts);
-  
-  if (ip.substr(0, 7) == "::ffff:")
-    ip = ip.substr(7);
-  else if(ip.substr(0, 2) == "::")
-    ip = ip.substr(2);  
-
   let year = date_ob.getFullYear();
   let month = date_ob.getMonth() + 1;
   let day = date_ob.getDate();
@@ -52,7 +46,13 @@ function getAccessUsers(req, res, next){
   let minutes = date_ob.getMinutes();
   let seconds = date_ob.getSeconds();
   let userDate = `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`
-  console.log("NEW DATE",userDate);
+  
+  if (ip.substr(0, 7) == "::ffff:")
+    ip = ip.substr(7);
+  else if(ip.substr(0, 2) == "::")
+    ip = ip.substr(2);  
+
+
   req.date = userDate; 
   req.ip_config = ip; 
   if (req.ip && req.get('User-Agent') && req.originalUrl && req.date)

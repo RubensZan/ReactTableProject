@@ -4,12 +4,6 @@ import { UAParser } from 'ua-parser-js';
 import CustomTable from './components/customTable';
 import ModalCar from './components/carModal';
 import CustomAlerts from './components/customAlerts';
-// import data from './user/users.js';
-// import job from './user/users_job.js';
-// import address from './user/users_address.js';
-// import cars from './user/users_cars.js';
-// import access from './user/users_access.js';
-// import products from './user/users_products_buyed.js';
 import OnLoadPage from './components/onLoadPage';
 import OnErrorPage from './components/onErrorPage';
 
@@ -21,7 +15,7 @@ class ContainerTable extends Component {
 
     // States
     this.state = {
-      carsArrows: false, 
+      carsArrows: false,
       isLoaded: false,
       error: null,
       usersData: null,
@@ -31,10 +25,10 @@ class ContainerTable extends Component {
       showCustomAlert: false,
       userTablefieldListConfig: {
         "Acesso": [
-          { label: "Rede", fieldKey: "user_access_business_technoloy" },
-          { label: "Login", fieldKey: "user_access_login" },
-          { label: "SO", fieldKey: "user_access_user_agent" },
-          { label: "IP", fieldKey: "user_access_ip_address" }
+          { label: "Rede", fieldKey: "businessTechnology" },
+          { label: "Login", fieldKey: "userLogin" },
+          { label: "SO", fieldKey: "userAgent" },
+          { label: "IP", fieldKey: "ipAddress" }
         ],
         "Endereço": [
           { label: "País", fieldKey: "user_address_country" },
@@ -114,44 +108,51 @@ class ContainerTable extends Component {
     this.closeModal();
   };
 
-  // map the jobs array and return the job(s) title(s)
-  getCollumnFormattedData(row, fieldName, fieldKey){
+  /**
+   * @function getCollumnFormattedData
+   * @summary this function will format the data in an row and return the data formatted
+   * @param {Object} row - Object that contains the fieldvalues inside it
+   * @param {string} fieldName - fieldName is object inside the row that will be traveled
+   * @param {string} fieldKey - fieldKeys are the fields that are supposed to be returned 
+   * @returns{string} the formatted data
+   */
+  getCollumnFormattedData(row, fieldName, fieldKey) {
     // console.log(row);
-    let allDataReturn = []; 
-    let rowData = row[fieldName]; 
-    for (let i = 0; i < rowData.length; i++){
+    let allDataReturn = [];
+    let rowData = row[fieldName];
+    for (let i = 0; i < rowData.length; i++) {
       let fieldValue = rowData[i];
       if (fieldValue[fieldKey])
-        allDataReturn += fieldValue[fieldKey] + " | "; 
+        allDataReturn += fieldValue[fieldKey] + " | ";
     }
     if (typeof allDataReturn === "string")
-      allDataReturn = allDataReturn.substring(0, allDataReturn.length - 3); 
-    return allDataReturn; 
+      allDataReturn = allDataReturn.substring(0, allDataReturn.length - 3);
+    return allDataReturn;
   }
 
   // receiving user id
-  showModal(dataId, currentCar) {
+  showModal(dataId) {
     console.log("DATA ID : ", dataId);
     // console.log("car from user",this.state.usersCarsData[dataId]);
-    let carObject = this.state.usersCarsData[dataId]; 
-    console.log("CAR OBJ",carObject);
+    let carObject = this.state.usersData[dataId].cars;
+    console.log("CAR OBJ", carObject);
     // if exist a first car
-    if (carObject[0].carName){
+    if (carObject[0].carName) {
 
       if (carObject.length < 2)
         this.setState({
-          showModalCar: carObject[0],
-          carsArrows: false 
+          showModalCar: carObject,
+          carsArrows: false
         })
       else
         this.setState({
-          showModalCar: carObject[currentCar],
-          carsArrows: true 
-        }) 
+          showModalCar: carObject,
+          carsArrows: true
+        })
     }
-    else 
-      console.log("NO CAR!!!");
-      
+    else
+      alert("User has no car!");
+
   };
 
   closeModal() {
@@ -166,13 +167,15 @@ class ContainerTable extends Component {
     })
   };
 
-  // Function that will mount the expanded table when called 
+  /**
+   * @function mountExtendedProductTable
+   * @summary function that will mount the table with the consumer from the product clicked table
+   * @param {integer} productId - id from the row clicked
+   * @returns 
+   */
   mountExtendedProductTable(productId) {
     // let consumer = this.consumerControll[productId] || {};
-    console.log("clicked",productId);
-    console.log("ROW DATA",this.state.productsData[productId]); 
-    let consumers = this.state.productsData[productId].consumers; 
-    console.log("CONSUMERS",consumers);
+    let consumers = this.state.productsData[productId].consumers;
     if (consumers && consumers[0].consumerName)
       return (
         <div style={{ border: "10px solid #cfc7ff" }}>
@@ -197,29 +200,54 @@ class ContainerTable extends Component {
     )
   };
 
-  // Function that will mount the expanded table when called 
+  /**
+   * @function mountExtendedUserTable
+   * @summary function to mount the extended user table row when clicked in a box extended
+   * @param {integer} userId - id from the user of the row clicked 
+   * @param {integer} rowId  - id from the extended row clicked 
+   * @returns{div} - div with the extended box clicked
+   */
   mountExtendedUserTable(userId, rowId) {
-    console.log("USERID:",userId,"ROWCLICKED",rowId);
     // Access
-    if (rowId === 0)
+    if (rowId === 0) {
       return (
-      <div>
-      </div>)
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", margin: "0 2%" }}>
+          <p> <strong>Login:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "access", "userLogin")} </p>
+          <p> <strong>Bussiness Tech:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "access", "businessTechnology")} </p>
+          <p> <strong>Ip:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "access", "ipAddress")} </p>
+        </div>
+      )
+    }
     // Address
-    else if (rowId === 1)
-      return (<div>"1"</div>)
-    // Job
-    else if (rowId === 2){
-      // console.log(this.state.usersData[userId]);
+    else if (rowId === 1) {
       return (
-    <div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", margin: "0 2%"}}>
-          <p> <strong>Profissão:</strong>{this.getJobsTitles(this.state.usersData[userId])} </p>
-          <p> <strong>Salário:</strong>{this.getSalary(this.state.usersData[userId])} </p>
-          <p> <strong>Endereço:</strong>{this.getJobAddress(this.state.usersData[userId])} </p>
-      </div>)}
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", margin: "0 2%" }}>
+          <p> <strong>Estado:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "address", "state")} </p>
+          <p> <strong>Cidade:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "address", "city")} </p>
+          <p> <strong>Endereço:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "address", "streetAddress")} </p>
+        </div>
+      )
+    }
+    // Job
+    else if (rowId === 2) {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", margin: "0 2%" }}>
+          <p> <strong>Cidade:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "jobs", "jobTitle")} </p>
+          <p> <strong>Salário:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "jobs", "salary")} </p>
+          <p> <strong>Endereço:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "jobs", "jobAddress")} </p>
+        </div>
+      )
+    }
     // Product Buyed
-    else if (rowId === 3)
-      return (<div>"3"</div>)
+    else if (rowId === 3) {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", margin: "0 2%" }}>
+          <p> <strong>Produto:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "products", "productName")} </p>
+          <p> <strong>Preço:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "products", "price")} </p>
+          <p> <strong>Descrição:</strong>{this.getCollumnFormattedData(this.state.usersData[userId], "products", "description")} </p>
+        </div>
+      )
+    }
   };
 
 
@@ -249,7 +277,7 @@ class ContainerTable extends Component {
               }
               {this.state.showModalCar ?
                 <ModalCar
-                  carObject={
+                  carsList={
                     this.state.showModalCar
                   }
                   closeHandler={
@@ -258,7 +286,7 @@ class ContainerTable extends Component {
                   saveChanges={
                     this.setUsersChanges
                   }
-                  carsArrows = {
+                  carsArrows={
                     this.state.carsArrows
                   }
                 />
@@ -278,9 +306,9 @@ class ContainerTable extends Component {
                   tableCollumn={[
                     { headerName: "Nomes", collumnValue: "userName", type: "text" },
                     { headerName: "Data de Nascimento", collumnValue: "userBirthDate", type: "text" },
-                    { headerName: "Profissão", collumnValue: "jobs", type: "text",valueFormatter: this.getCollumnFormattedData, fieldName: "jobs",fieldKey: "jobTitle" },
-                    { headerName: "Salário", collumnValue: "jobs", type: "text",valueFormatter: this.getCollumnFormattedData, fieldName: "jobs",fieldKey: "salary"},
-                    { headerName: "Carro",collumnValue: "carName",type: "button",handleClick: this.showModal}
+                    { headerName: "Profissão", collumnValue: "jobs", type: "text", valueFormatter: this.getCollumnFormattedData, fieldName: "jobs", fieldKey: "jobTitle" },
+                    { headerName: "Salário", collumnValue: "jobs", type: "text", valueFormatter: this.getCollumnFormattedData, fieldName: "jobs", fieldKey: "salary" },
+                    { headerName: "Carro", collumnValue: "carName", type: "button", handleClick: this.showModal }
 
 
                     // {headerName: "Trabalho",collumnValue: "currentJob", type: "text",valueFormatter: (currentJob)=> currentJob.user_job_title},
@@ -292,7 +320,7 @@ class ContainerTable extends Component {
                   fieldList={
                     this.state.userTablefieldListConfig
                   }
-                  fieldValues={{ "Acesso": 0, "Endereço": 1, "Emprego": 2, "Produto Comprado": 3}}
+                  fieldValues={{ "Acesso": 0, "Endereço": 1, "Emprego": 2, "Produto Comprado": 3 }}
                   expandedType="lines"
                   mountExpanded={this.mountExtendedUserTable}
                 />

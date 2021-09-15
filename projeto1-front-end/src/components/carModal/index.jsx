@@ -5,46 +5,30 @@ import { ControlButton } from './styles';
 
 /**
  * @file module:src/components/carModal
- * @param {array of data} carObject 
+ * @param {array of data} carsList 
  * @param {function} closeHandler 
  * @param {function} saveChanges 
  * @returns a car modal with the information from the clicked line user
  */
-export default function ModalCar({ carObject, closeHandler, saveChanges, carsArrows }) {
+export default function ModalCar({ carsList, closeHandler, saveChanges, carsArrows }) {
 
-    console.log("MORE THAN ONE CAR?", carsArrows);
-    console.log("Car Object:", carObject);
+    // console.log("MORE THAN ONE CAR?", carsArrows);
+    // console.log("Car list:", carsList);
+    const initialCarsList = carsList;
 
-    const [carChanged, setChanges] = useState({
-        car_manufacturer: (carObject && carObject.manufacturer) ? carObject.manufacturer : "",
-        car_model: (carObject && carObject.model) ? carObject.model : "",
-        car_name: (carObject && carObject.carName) ? carObject.carName : "",
-        car_fuel: (carObject && carObject.fuel) ? carObject.fuel : "",
-        userID: (carObject && carObject.userID) ? carObject.userID : ""
-    })
-
-
-    const [canPrevious, setPreviousCar] = useState(
-        false
-    )
-
-    const [canForward, setForwardCar] = useState(
-        false
-    )
-
-    const [readOnly, setReadOnlyState] = useState(
-        true
-    )
+    const [currentCar, setCurrentCar] = useState(0)
+    const [carChanged, setChanges] = useState(carsList)
+    const [canPrevious, setCanPreviousCar] = useState(false)
+    const [canForward, setCanForwardCar] = useState(carsArrows)
+    const [readOnly, setReadOnlyState] = useState(true)
     const myRef = useRef();
 
     function edit() {
         setReadOnlyState(!readOnly);
-        // console.log(readOnly);
     }
     const closeListener = (e) => {
         if (e.keyCode === 27)
             closeHandler();
-
         if (e.type === "click")
             closeHandler();
     }
@@ -58,6 +42,53 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
         }
     });
 
+    function goPrevious() {
+        // first car
+        if (currentCar === 0)
+            return;
+
+        // second car
+        if (currentCar === 1) {
+            setCanForwardCar(true);
+            setCanPreviousCar(false);
+            setCurrentCar(currentCar - 1);
+            return;
+        }
+
+        setCanForwardCar(true);
+        setCanPreviousCar(true);
+        setCurrentCar(currentCar - 1);
+    }
+    function goNext() {
+        // if the current car is the last
+        if (carsList.length - 1 === currentCar)
+            return;
+
+        // if the current car is the penultimate 
+        if (carsList.length - 2 === currentCar) {
+            setCanPreviousCar(true);
+            setCanForwardCar(false);
+            setCurrentCar(currentCar + 1);
+            return;
+        }
+        // else 
+        setCanForwardCar(true);
+        setCanPreviousCar(true);
+        setCurrentCar(currentCar + 1);
+
+
+    }
+
+    const updateFieldChanged = (name, index) => (event) => {
+        console.log(name);
+        console.log(index);
+        console.log(event.target.value);
+        console.log("ALTERABLE",initialCarsList[index][name]);
+        initialCarsList[index][name] = event.target.value; 
+        setChanges([...carChanged]); 
+    };
+
+
     return (
         <div style={style.parentDiv} >
             <div style={style.modalDiv} onClick={event => event.stopPropagation()} tabIndex="0" ref={myRef}>
@@ -68,8 +99,8 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
                         bgColor="#4169E1"
                     />
 
-                    <ControlButton able={canPrevious} style={{ position: "absolute", top: "5px", left: "5px" }}>&lt;&lt;</ControlButton>
-                    <ControlButton able={canForward} style={{ position: "absolute", top: "5px", left: "40px" }}>&gt;&gt;</ControlButton>
+                    <ControlButton onClick={goPrevious} able={canPrevious} style={{ position: "absolute", top: "5px", left: "5px" }}>&lt;&lt;</ControlButton>
+                    <ControlButton onClick={goNext} able={canForward} style={{ position: "absolute", top: "5px", left: "40px" }}>&gt;&gt;</ControlButton>
 
                 </div>
                 <div style={style.headerModalContent}>
@@ -78,12 +109,8 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
                         autoFocus={true}
                         labelName="Marca "
                         type="text"
-                        value={carChanged.car_manufacturer}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_manufacturer: event.target.value })
-                            )
-                        }
+                        value={carChanged[currentCar].manufacturer}
+                        onChange={updateFieldChanged("manufacturer", currentCar)}
                         readOnly={readOnly}
                     />
                 </div>
@@ -92,12 +119,8 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
                     <CustomInput
                         labelName="Modelo "
                         type="text"
-                        value={carChanged.car_model}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_model: event.target.value })
-                            )
-                        }
+                        value={carChanged[currentCar].model}
+                        onChange={updateFieldChanged("model", currentCar)}
                         readOnly={readOnly}
                     />
                 </div>
@@ -106,12 +129,8 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
                     <CustomInput
                         labelName="Nome "
                         type="text"
-                        value={carChanged.car_name}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_name: event.target.value })
-                            )
-                        }
+                        value={carChanged[currentCar].carName}
+                        onChange={updateFieldChanged("carName", currentCar)}
                         readOnly={readOnly}
                     />
                 </div>
@@ -120,12 +139,8 @@ export default function ModalCar({ carObject, closeHandler, saveChanges, carsArr
                     <CustomInput
                         labelName="Combustível "
                         type="text"
-                        value={carChanged.car_fuel}
-                        onChange={
-                            event => setChanges(
-                                currentState => ({ ...currentState, car_fuel: event.target.value })
-                            )
-                        }
+                        value={carChanged[currentCar].fuel}
+                        onChange={updateFieldChanged("fuel", currentCar)}
                         readOnly={readOnly}
                     />
                 </div>
