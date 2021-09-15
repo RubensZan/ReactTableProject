@@ -7,7 +7,6 @@ import OnLoadPage from '../components/onLoadPage';
 import OnErrorPage from '../components/onErrorPage';
 
 
-
 class ProductsTable extends Component {
   constructor(props) {
     super(props);
