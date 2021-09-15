@@ -5,7 +5,7 @@ import CustomAlerts from '../components/customAlerts';
 import OnLoadPage from '../components/onLoadPage';
 import OnErrorPage from '../components/onErrorPage';
 
-class HistoryTable extends Component {
+export default class HistoryTable extends Component {
     constructor(props) {
         super(props);
 
@@ -110,5 +110,3 @@ class HistoryTable extends Component {
         )
     };
 }
-
-export default HistoryTable;

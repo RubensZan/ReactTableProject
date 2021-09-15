@@ -248,8 +248,6 @@ class UsersTable extends Component {
                 null
               }
 
-
-              
                 <h1 style={{ display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa", margin: "0 0", color: "#fff" }}>
                   Tabela de Usuários
                 </h1>
@@ -284,7 +282,7 @@ class UsersTable extends Component {
           :
           <div style={{ height: "100vh" }}>
               <h1 style={{ display: "flex", justifyContent: "center", width: "100%", backgroundColor: "#8570fa", margin: "0 0", color: "#fff" }}>
-                Tabela de Produtos
+                Tabela de Usuários
               </h1>
               <OnLoadPage />
           </div>
