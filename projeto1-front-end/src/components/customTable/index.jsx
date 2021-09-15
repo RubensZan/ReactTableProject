@@ -22,10 +22,10 @@ class CustomTable extends Component {
         // setting the quantity of rows in the page in relation with the vw
         const pageRows =
             window.innerWidth > 1200 ?
-                10
+                30
                 : window.innerWidth > 1000 ?
-                    6 :
-                    4;
+                    18 :
+                    10;
         // console.log(pageRows);
         const totalRows = this.props.tableRowsValues.length;
         const totalPages = Math.ceil(totalRows / pageRows);
